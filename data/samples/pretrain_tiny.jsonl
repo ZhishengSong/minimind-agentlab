@@ -1,0 +1,4 @@
+{"text": "MiniMind AgentLab is a small language model training project."}
+{"text": "The model learns next-token prediction from JSONL text data."}
+{"text": "RMSNorm, RoPE, SwiGLU, and grouped-query attention are implemented in PyTorch."}
+{"text": "A clean data pipeline should tokenize text, truncate sequences, pad batches, and mask labels."}

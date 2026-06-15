@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local data and generated artifacts
+checkpoints/*
+!checkpoints/.gitkeep
+logs/*
+!logs/.gitkeep
+outputs/*
+!outputs/.gitkeep
+data/*.jsonl
+data/*.json
+data/*.bin
+data/*.pt
+data/tokenizer/
+data/minimind/pretrain_t2t_mini.jsonl
+data/minimind/tokenizer/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
