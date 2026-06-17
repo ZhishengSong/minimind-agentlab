@@ -120,6 +120,7 @@ This output is expected to be low quality after only 12 optimizer steps. The pur
 - Fixed training log loss averaging during gradient accumulation.
 - Fixed checkpoint resume when loading CPU RNG state with `map_location=cuda`.
 - Added missing runtime dependencies to `requirements.txt`: `typing_extensions`, `sympy`.
+- Added `scripts/eval_pretrain_loss.py` for fixed-slice validation loss, so noisy streaming training loss can be compared against stable checkpoint-level metrics.
 
 ## Next Steps
 

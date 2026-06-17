@@ -205,6 +205,7 @@ Current status after local validation:
 - [x] Local 500-step smoke run passed
 - [x] Checkpoint save, resume, and generation all passed on real-data checkpoints
 - [x] `reports/pretrain_smoke_run.md` records the real-data smoke results
+- [x] Added fixed-slice validation loss script: `scripts/eval_pretrain_loss.py`
 
 Current training decision:
 
@@ -285,6 +286,7 @@ Do this only after local/short smoke runs pass.
 - [ ] Run 5k-step server pilot
 - [ ] Review server tokens/sec, memory, and cost
 - [ ] Decide whether to continue to 20k+ steps
+- [ ] Evaluate 5k and 50k checkpoints on a fixed validation slice
 
 Recommended server spec:
 
@@ -327,6 +329,21 @@ Server pilot success criteria:
 - [ ] Generation script loads server checkpoint
 - [ ] Sustained tokens/sec is stable enough to justify server cost
 - [ ] Disk usage remains safe with planned checkpoint frequency
+- [ ] Fixed validation loss confirms progress despite noisy streaming training loss
+
+Fixed validation command:
+
+```bash
+python scripts/eval_pretrain_loss.py \
+  --checkpoint checkpoints/pretrain_minimind_64m_server50k/latest.pt \
+  --config configs/pretrain_minimind_local.yaml \
+  --device cuda \
+  --num-examples 1000 \
+  --batch-size 4 \
+  --max-seq-len 2048 \
+  --save-subset data/samples/pretrain_val_1k.jsonl \
+  --output reports/eval_server50k_val_1k.json
+```
 
 ## Phase 2: Agentic RL Research Layer
 

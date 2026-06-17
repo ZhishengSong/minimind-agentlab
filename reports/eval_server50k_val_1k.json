@@ -1,0 +1,22 @@
+{
+  "checkpoint": "checkpoints/pretrain_minimind_64m_server50k/latest.pt",
+  "checkpoint_step": 50000,
+  "config": "configs/pretrain_minimind_local.yaml",
+  "data_path": "data/minimind/pretrain_t2t_mini.jsonl",
+  "tokenizer_path": "data/minimind/tokenizer",
+  "tokenizer_type": "HFTokenizerWrapper",
+  "num_examples": 1000,
+  "skip_examples": 0,
+  "batch_size": 4,
+  "max_seq_len": 2048,
+  "max_batch_len": 745,
+  "input_tokens": 213462,
+  "predicted_tokens": 212462,
+  "loss": 2.25228,
+  "perplexity": 9.509392,
+  "elapsed_sec": 2.2835,
+  "tokens_per_sec": 93478.93,
+  "device": "cuda",
+  "dtype": "bf16",
+  "saved_subset": "data/samples/pretrain_val_1k.jsonl"
+}
