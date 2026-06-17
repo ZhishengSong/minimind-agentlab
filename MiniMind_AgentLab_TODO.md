@@ -1,6 +1,6 @@
 # MiniMind AgentLab TODO
 
-Last updated: 2026-06-16
+Last updated: 2026-06-17
 
 ## Project Goal
 
@@ -46,11 +46,11 @@ data/minimind/
 
 Current asset status:
 
-- [x] Official MiniMind tokenizer copied from `C:\D\Job\minimind-S\model`
+- [x] Official MiniMind tokenizer copied from a local MiniMind checkout
 - [x] Tokenizer validated against `configs/minimind_64m.yaml`
-- [ ] Download `pretrain_t2t_mini.jsonl`
-- [ ] Place it at `data/minimind/pretrain_t2t_mini.jsonl`
-- [ ] Validate real dataset with `scripts/validate_pretrain_assets.py`
+- [x] Download `pretrain_t2t_mini.jsonl`
+- [x] Place it at `data/minimind/pretrain_t2t_mini.jsonl`
+- [x] Validate real dataset with `scripts/validate_pretrain_assets.py`
 
 ## Phase 1: Base LLM Training Stack
 
@@ -180,9 +180,9 @@ Current asset status:
 
 ### Step 9: Real MiniMind-Compatible Assets
 
-- [x] Clone official MiniMind repository separately at `C:\D\Job\minimind-S`
+- [x] Clone official MiniMind repository separately
 - [x] Copy official tokenizer into `data/minimind/tokenizer`
-- [x] Install tokenizer dependencies in local `pytorch` conda environment
+- [x] Install tokenizer dependencies in a local Python/Conda environment
 - [x] Add `scripts/inspect_tokenizer.py`
 - [x] Validate tokenizer vocab size is 6400
 - [x] Validate tokenizer encode/decode
@@ -190,8 +190,8 @@ Current asset status:
 - [x] Add real-data config `configs/pretrain_minimind_local.yaml`
 - [x] Add `data/minimind/README.md`
 - [x] Write `docs/step_9_minimind_assets.md`
-- [ ] Download `pretrain_t2t_mini.jsonl`
-- [ ] Validate real JSONL assets
+- [x] Download `pretrain_t2t_mini.jsonl`
+- [x] Validate real JSONL assets
 
 ## Immediate Next Steps
 
@@ -199,55 +199,55 @@ Current asset status:
 
 Before any 64M training run:
 
-- [ ] Download `pretrain_t2t_mini.jsonl` from ModelScope or Hugging Face
-- [ ] Put it at `data/minimind/pretrain_t2t_mini.jsonl`
-- [ ] Run tokenizer check:
+- [x] Download `pretrain_t2t_mini.jsonl` from ModelScope or Hugging Face
+- [x] Put it at `data/minimind/pretrain_t2t_mini.jsonl`
+- [x] Run tokenizer check:
 
 ```bash
 python scripts/inspect_tokenizer.py --tokenizer-path data/minimind/tokenizer --model-config configs/minimind_64m.yaml --strict-vocab-match
 ```
 
-- [ ] Run data validation:
+- [x] Run data validation:
 
 ```bash
 python scripts/validate_pretrain_assets.py --config configs/pretrain_minimind_local.yaml
 ```
 
-- [ ] Confirm batch shape
-- [ ] Confirm decoded sample looks reasonable
-- [ ] Confirm tokenizer vocab size equals model vocab size
-- [ ] Confirm labels use `-100` for padding
+- [x] Confirm batch shape
+- [x] Confirm decoded sample looks reasonable
+- [x] Confirm tokenizer vocab size equals model vocab size
+- [x] Confirm labels use `-100` for padding
 
 ### Step 11: 64M Smoke Run
 
 This is not final training. This is a pilot run to catch real-data and real-model issues.
 
-- [ ] Run 10-step 64M smoke test
+- [x] Run 10-step 64M smoke test
 
 ```bash
 python scripts/train_pretrain.py --config configs/pretrain_minimind_local.yaml --override max_steps=10 --override save_interval=5
 ```
 
-- [ ] Confirm loss is finite
-- [ ] Confirm checkpoint is saved
-- [ ] Resume from checkpoint
-- [ ] Generate from checkpoint
-- [ ] Run 100-step smoke test
-- [ ] Run 500-step smoke test if speed is acceptable
-- [ ] Record loss, tokens/sec, memory, checkpoint path, generated sample
+- [x] Confirm loss is finite
+- [x] Confirm checkpoint is saved
+- [x] Resume from checkpoint
+- [x] Generate from checkpoint
+- [x] Run 100-step smoke test
+- [x] Run 500-step smoke test if speed is acceptable
+- [x] Record loss, tokens/sec, memory, checkpoint path, generated sample
 
 ### Step 12: Experiment Reporting
 
-- [ ] Add `reports/pretrain_smoke_run.md`
-- [ ] Add training command
-- [ ] Add hardware information
-- [ ] Add config summary
-- [ ] Add loss table
-- [ ] Add tokens/sec
-- [ ] Add memory usage
-- [ ] Add checkpoint/resume result
-- [ ] Add generation samples
-- [ ] Add known limitations
+- [x] Add `reports/pretrain_smoke_run.md`
+- [x] Add training command
+- [x] Add hardware information
+- [x] Add config summary
+- [x] Add loss table
+- [x] Add tokens/sec
+- [x] Add memory usage
+- [x] Add checkpoint/resume result
+- [x] Add generation samples
+- [x] Add known limitations
 
 ### Step 13: Server Training Preparation
 

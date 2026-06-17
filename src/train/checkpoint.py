@@ -31,9 +31,9 @@ def set_random_state(state: dict[str, Any]) -> None:
     if "python" in state:
         random.setstate(state["python"])
     if "torch" in state:
-        torch.set_rng_state(state["torch"])
+        torch.set_rng_state(state["torch"].cpu())
     if "cuda" in state and torch.cuda.is_available():
-        torch.cuda.set_rng_state_all(state["cuda"])
+        torch.cuda.set_rng_state_all([cuda_state.cpu() for cuda_state in state["cuda"]])
 
 
 def checkpoint_path(output_dir: str | Path, step: int) -> Path:

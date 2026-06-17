@@ -4,3 +4,5 @@ tqdm
 numpy
 tokenizers
 transformers
+typing_extensions
+sympy

@@ -113,6 +113,7 @@ def train(args: argparse.Namespace, train_config: PretrainConfig) -> None:
     data_iter = infinite_batches(dataloader)
     optimizer.zero_grad(set_to_none=True)
     running_loss = 0.0
+    running_loss_count = 0
     running_tokens = 0
     running_updates = 0
     window_start = time.perf_counter()
@@ -136,6 +137,7 @@ def train(args: argparse.Namespace, train_config: PretrainConfig) -> None:
 
         scaler.scale(loss).backward()
         running_loss += float(output.loss.detach().item())
+        running_loss_count += 1
         running_tokens += int(batch["attention_mask"].sum().item())
 
         is_update_step = (micro_step + 1) % train_config.gradient_accumulation_steps == 0
@@ -155,7 +157,7 @@ def train(args: argparse.Namespace, train_config: PretrainConfig) -> None:
         should_log = global_step == 1 or global_step % train_config.log_interval == 0
         if should_log:
             elapsed = max(1.0e-6, time.perf_counter() - window_start)
-            avg_loss = running_loss / max(1, running_updates)
+            avg_loss = running_loss / max(1, running_loss_count)
             tokens_per_sec = running_tokens / elapsed
             metrics = {
                 "step": global_step,
@@ -172,6 +174,7 @@ def train(args: argparse.Namespace, train_config: PretrainConfig) -> None:
                 f"lr {lr:.2e} | tok/s {metrics['tokens_per_sec']:.1f} | grad {metrics['grad_norm']:.3f}"
             )
             running_loss = 0.0
+            running_loss_count = 0
             running_tokens = 0
             running_updates = 0
             window_start = time.perf_counter()

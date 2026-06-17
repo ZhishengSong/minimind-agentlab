@@ -34,7 +34,8 @@ Completed:
 Current limitation:
 
 - The official MiniMind tokenizer has been copied and validated locally.
-- The real `pretrain_t2t_mini.jsonl` dataset is not committed and still needs to be downloaded before a 64M smoke run.
+- The real `pretrain_t2t_mini.jsonl` dataset is not committed, but has been validated locally.
+- A local 64M smoke run has passed; longer 100/500-step runs are still pending.
 - Agentic RL modules are planned but not implemented yet.
 
 ## Architecture
@@ -91,10 +92,11 @@ tests/         Future tests
 
 ## Setup
 
-This project has been tested with the local Anaconda `pytorch` environment:
+Use any Python environment with PyTorch and the packages in `requirements.txt`.
+If you keep a dedicated Conda environment for this project, activate it first:
 
-```text
-C:\Users\zhish\anaconda3\envs\pytorch\python.exe
+```bash
+conda activate pytorch
 ```
 
 Install dependencies:
@@ -103,10 +105,11 @@ Install dependencies:
 python -m pip install -r requirements.txt
 ```
 
-If you are using the local environment directly on Windows:
+If you need to call a specific Python executable directly, replace `python`
+with that executable path in the commands below.
 
 ```bash
-C:\Users\zhish\anaconda3\envs\pytorch\python.exe -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## Quickstart
@@ -117,10 +120,10 @@ Run the full tiny local validation:
 python scripts/run_tiny_e2e.py
 ```
 
-On this machine, use:
+If you want the script to use a specific interpreter for subprocesses:
 
 ```bash
-C:\Users\zhish\anaconda3\envs\pytorch\python.exe scripts\run_tiny_e2e.py --python C:\Users\zhish\anaconda3\envs\pytorch\python.exe
+python scripts/run_tiny_e2e.py --python path/to/python
 ```
 
 This runs:
@@ -232,6 +235,26 @@ eos_token_id: 2
 model_vocab_size: 6400
 ```
 
+64M real-data smoke run:
+
+```text
+checkpoint: checkpoints/pretrain_minimind_64m_smoke10/latest.pt
+loss moved from 8.8723 at step 1 to 8.5569 at step 10
+resume continued to step 12 with loss 8.3415
+peak memory observed: about 2.7GB
+generation loaded the checkpoint successfully
+```
+
+500-step local GPU smoke run:
+
+```text
+checkpoint: checkpoints/pretrain_minimind_64m_smoke100/latest.pt
+loss moved from 8.8723 at step 1 to 7.0437 at step 100
+resume continued to step 500 with loss 5.2633
+peak memory observed: about 3.5GB
+generation loaded the checkpoint successfully
+```
+
 ## Real MiniMind Assets
 
 The official tokenizer files are expected at:
@@ -305,10 +328,9 @@ The intent is to learn and demonstrate the engineering internals behind small LL
 
 Near term:
 
-- Download and validate `pretrain_t2t_mini.jsonl`
-- Run a 64M smoke training run
-- Record loss, throughput, memory, checkpoint, and generation samples
-- Add a compact experiment report
+- Review the 500-step smoke run and decide whether to run longer locally or on a server
+- Record generation samples across longer checkpoints
+- Prepare server setup notes for longer training
 
 Next research layer:
 
