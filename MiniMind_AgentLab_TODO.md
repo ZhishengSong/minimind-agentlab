@@ -195,6 +195,23 @@ Current asset status:
 
 ## Immediate Next Steps
 
+Current status after local validation:
+
+- [x] Real MiniMind tokenizer is available locally and matches `vocab_size=6400`
+- [x] Real `pretrain_t2t_mini.jsonl` is available locally at `data/minimind/pretrain_t2t_mini.jsonl`
+- [x] Real-data asset validation passed
+- [x] Local RTX 5070 Ti Laptop GPU 10-step smoke run passed
+- [x] Local 100-step smoke run passed
+- [x] Local 500-step smoke run passed
+- [x] Checkpoint save, resume, and generation all passed on real-data checkpoints
+- [x] `reports/pretrain_smoke_run.md` records the real-data smoke results
+
+Current training decision:
+
+- Local machine is good for validation and short smoke runs.
+- Longer runs should preferably move to a rented server if price is reasonable.
+- Candidate server target: 1x RTX 5090 32GB, 80GB+ disk preferred, recent PyTorch/CUDA image required.
+
 ### Step 10: Real Data Validation
 
 Before any 64M training run:
@@ -253,16 +270,63 @@ python scripts/train_pretrain.py --config configs/pretrain_minimind_local.yaml -
 
 Do this only after local/short smoke runs pass.
 
-- [ ] Decide GPU target
-  - [ ] local GPU if available
-  - [ ] short rental for pilot
-  - [ ] longer rental for final run
+- [x] Decide GPU target
+  - [x] Local GPU is available and validated for short runs
+  - [x] Prefer short rental for server pilot
+  - [x] Candidate server GPU: RTX 5090 32GB
+  - [ ] Confirm rented server PyTorch can see RTX 5090
 - [ ] Add server setup notes
 - [ ] Test `git clone`
 - [ ] Test dependency install
 - [ ] Test asset placement
+- [ ] Validate tokenizer on server
+- [ ] Validate real dataset on server
 - [ ] Test 10-step run on server
-- [ ] Run longer 64M training
+- [ ] Run 5k-step server pilot
+- [ ] Review server tokens/sec, memory, and cost
+- [ ] Decide whether to continue to 20k+ steps
+
+Recommended server spec:
+
+```text
+GPU: 1x RTX 5090 32GB
+CPU: 16+ cores
+RAM: 64GB+
+System disk: 30GB is acceptable
+Data disk: 80GB+ preferred, 100GB safer
+Image: PyTorch 2.7+ / CUDA 12.8+ or platform image explicitly supporting RTX 5090
+```
+
+First server checks:
+
+```bash
+nvidia-smi
+python -c "import torch; print(torch.__version__); print(torch.version.cuda); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0))"
+```
+
+Server pilot command:
+
+```bash
+python scripts/train_pretrain.py \
+  --config configs/pretrain_minimind_local.yaml \
+  --override run_name=pretrain_minimind_64m_server5k \
+  --override output_dir=checkpoints/pretrain_minimind_64m_server5k \
+  --override device=cuda \
+  --override max_steps=5000 \
+  --override save_interval=500 \
+  --override log_interval=50 \
+  --override num_workers=2
+```
+
+Server pilot success criteria:
+
+- [ ] Loss remains finite
+- [ ] Loss continues below the local 500-step result of about `5.26`
+- [ ] Checkpoints save correctly
+- [ ] Resume works from latest checkpoint
+- [ ] Generation script loads server checkpoint
+- [ ] Sustained tokens/sec is stable enough to justify server cost
+- [ ] Disk usage remains safe with planned checkpoint frequency
 
 ## Phase 2: Agentic RL Research Layer
 
