@@ -142,16 +142,18 @@ loss 曲线可展示
 
 ## V0 Todo
 
+当前进度（2026-06-22）：64M 模型已在租用服务器训练到 50k step；5k/10k/20k/50k 完整 checkpoint、日志、配置、tokenizer、评估报告和生成样例均已下载并通过归档 SHA256 校验。50k 固定验证集 loss 为 `2.25228`，perplexity 为 `9.509392`。下一步在独立 GPU 机器上完成多 checkpoint 统一评估和 10-prompt 生成套件，然后进入 Version 1。
+
 ### 0.1 整理 pretrain checkpoint
 
-- [ ] 找到已经训练好的 MiniMind pretrain checkpoint
-- [ ] 确认 checkpoint 可以成功加载
-- [ ] 记录模型参数量
+- [x] 找到已经训练好的 MiniMind pretrain checkpoint
+- [x] 确认 checkpoint 可以成功加载
+- [x] 记录模型参数量
 - [ ] 记录训练 token 数
-- [ ] 记录训练数据来源
+- [x] 记录训练数据来源
 - [ ] 记录训练时长和硬件
-- [ ] 保存最终 loss
-- [ ] 保存 loss 曲线截图或日志
+- [x] 保存最终 loss
+- [x] 保存 loss 曲线截图或日志
 
 建议记录格式：
 
@@ -194,8 +196,8 @@ minimind_track/notes/pretrain_notes.md
 Todo：
 
 - [ ] 写 `eval_minimind_generation.py`
-- [ ] 输入简单 prompt
-- [ ] 检查输出是否正常
+- [x] 输入简单 prompt
+- [x] 检查输出是否正常
 - [ ] 保存 10 条生成样例
 
 测试 prompt 示例：

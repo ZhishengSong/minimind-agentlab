@@ -204,3 +204,50 @@ MiniMind
 ```
 
 The 500-step generation is still low quality, but the loss trend, checkpointing, resume path, and inference loading are all functional.
+
+## Rented-Server 5k And 50k Follow-Up
+
+The server run extended the same 64M training track through 50,000 optimizer steps.
+Preserved training logs report:
+
+| Run | First recorded step/loss | Final recorded step/loss |
+| --- | ---: | ---: |
+| Server 5k | 1 / 8.877661 | 5,000 / 2.924881 |
+| Server 50k continuation | 5,200 / 3.208126 | 50,000 / 2.283401 |
+
+Fixed-slice evaluation of the 50k checkpoint used 1,000 examples and 212,462 predicted tokens:
+
+```text
+validation_loss: 2.252280
+perplexity: 9.509392
+device: cuda
+dtype: bf16
+```
+
+The 50k samples are substantially more coherent than the 5k sample, but still show repetition and limited factual reliability. This checkpoint is a candidate foundation for the Track TODO's tool-use SFT boundary experiment, not a finished assistant model.
+
+## Artifact Preservation
+
+On 2026-06-22, the rented-server artifacts were downloaded and verified locally. The preserved set contains:
+
+```text
+pretrain_step_005000.pt
+pretrain_step_010000.pt
+pretrain_step_020000.pt
+pretrain_step_050000.pt
+training configs
+MiniMind tokenizer
+5k/50k training logs
+fixed-slice evaluation report
+5k/50k generation samples
+Python and PyTorch environment metadata
+```
+
+Archive details:
+
+```text
+size_bytes: 3027998720
+sha256: e1c453ffa5e95e7059c60aa53d9b6be8f8ce349caea2eaaeaa5c6e67608f9702
+```
+
+The current workstation is the source and artifact-management machine. Further checkpoint evaluation, generation, tool-use SFT, and Agentic RL work will run on a separate GPU machine.

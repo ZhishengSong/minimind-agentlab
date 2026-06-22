@@ -31,12 +31,14 @@ Completed:
 - Step 8: tiny end-to-end validation
 - Step 9: MiniMind-compatible tokenizer/data integration hooks
 
-Current limitation:
+Current status and limitations:
 
-- The official MiniMind tokenizer has been copied and validated locally.
-- The real `pretrain_t2t_mini.jsonl` dataset is not committed, but has been validated locally.
-- A local 64M smoke run has passed; longer 100/500-step runs are still pending.
-- Agentic RL modules are planned but not implemented yet.
+- Local 10/100/500-step smoke runs and rented-server 5k/50k runs have completed.
+- The 50k checkpoint reached fixed-slice validation loss `2.25228` and perplexity `9.509392`.
+- Full 5k/10k/20k/50k checkpoints, logs, configs, tokenizer, reports, and samples were exported from the rented server and SHA256-verified locally on 2026-06-22.
+- Large checkpoints and the real `pretrain_t2t_mini.jsonl` dataset are intentionally not committed to Git.
+- The current non-GPU workstation is used for source and artifact management; checkpoint evaluation and post-training will run on a separate GPU machine.
+- Phase 2 tool-use SFT and Agentic RL modules have not started yet.
 
 ## Architecture
 
@@ -255,6 +257,18 @@ peak memory observed: about 3.5GB
 generation loaded the checkpoint successfully
 ```
 
+50k rented-server training and evaluation:
+
+```text
+checkpoints preserved at steps: 5k, 10k, 20k, 50k
+training loss at step 5k: 2.924881
+training loss at step 50k: 2.283401
+fixed 1k-example validation loss: 2.252280
+fixed 1k-example validation perplexity: 9.509392
+generation is coherent at the paragraph level but remains repetitive
+artifact archive SHA256: e1c453ffa5e95e7059c60aa53d9b6be8f8ce349caea2eaaeaa5c6e67608f9702
+```
+
 ## Real MiniMind Assets
 
 The official tokenizer files are expected at:
@@ -328,13 +342,15 @@ The intent is to learn and demonstrate the engineering internals behind small LL
 
 Near term:
 
-- Review the 500-step smoke run and decide whether to run longer locally or on a server
-- Record generation samples across longer checkpoints
-- Prepare server setup notes for longer training
+- Run fixed-slice evaluation for the preserved 5k/10k/20k/50k checkpoints on the GPU machine
+- Run a fixed 10-prompt generation suite and finalize the pretraining V0 report
+- Select the 50k checkpoint as the candidate base for tool-use SFT
+- Design tool-use special tokens, update the tokenizer, and resize model embeddings
 
 Next research layer:
 
-- SFT data path
+- WebGym-RL trajectory conversion and assistant-only SFT loss masking
+- Tool-use SFT and pretrain-vs-SFT evaluation
 - tool-use benchmark
 - tool call parser
 - rule-based verifier

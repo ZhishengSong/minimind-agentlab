@@ -22,6 +22,9 @@ data/*.pt
 data/tokenizer/
 data/minimind/pretrain_t2t_mini.jsonl
 data/minimind/tokenizer/
+minimind-50k-artifacts/
+minimind-50k-artifacts.tar
+minimind-50k-artifacts.tar.sha256
 
 # OS / editor
 .DS_Store

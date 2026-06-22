@@ -1,6 +1,6 @@
 # MiniMind AgentLab TODO
 
-Last updated: 2026-06-17
+Last updated: 2026-06-22
 
 ## Project Goal
 
@@ -206,12 +206,19 @@ Current status after local validation:
 - [x] Checkpoint save, resume, and generation all passed on real-data checkpoints
 - [x] `reports/pretrain_smoke_run.md` records the real-data smoke results
 - [x] Added fixed-slice validation loss script: `scripts/eval_pretrain_loss.py`
+- [x] Completed rented-server training through step 50,000
+- [x] Evaluated the 50k checkpoint on the fixed 1k-example validation slice
+- [x] Recorded 50k validation loss `2.25228` and perplexity `9.509392`
+- [x] Exported full 5k/10k/20k/50k checkpoints from the rented server
+- [x] Exported server logs, configs, tokenizer, reports, samples, and environment metadata
+- [x] Downloaded and SHA256-verified the artifact archive locally on 2026-06-22
 
 Current training decision:
 
-- Local machine is good for validation and short smoke runs.
-- Longer runs should preferably move to a rented server if price is reasonable.
-- Candidate server target: 1x RTX 5090 32GB, 80GB+ disk preferred, recent PyTorch/CUDA image required.
+- Do not extend pretraining again before reviewing the preserved checkpoints.
+- Keep the current workstation for source, documentation, and artifact backup; it has no GPU requirement.
+- Use the separate GPU machine for checkpoint loading, fixed evaluation, generation, SFT, and RL.
+- Finish Pretrain V0, then follow the Track TODO through special tokens and tool-use SFT before GRPO.
 
 ### Step 10: Real Data Validation
 
@@ -275,18 +282,22 @@ Do this only after local/short smoke runs pass.
   - [x] Local GPU is available and validated for short runs
   - [x] Prefer short rental for server pilot
   - [x] Candidate server GPU: RTX 5090 32GB
-  - [ ] Confirm rented server PyTorch can see RTX 5090
-- [ ] Add server setup notes
-- [ ] Test `git clone`
-- [ ] Test dependency install
-- [ ] Test asset placement
-- [ ] Validate tokenizer on server
-- [ ] Validate real dataset on server
-- [ ] Test 10-step run on server
-- [ ] Run 5k-step server pilot
-- [ ] Review server tokens/sec, memory, and cost
-- [ ] Decide whether to continue to 20k+ steps
-- [ ] Evaluate 5k and 50k checkpoints on a fixed validation slice
+  - [x] Confirm rented server PyTorch/CUDA environment can run training
+- [ ] Add reusable server setup notes
+- [x] Test `git clone`
+- [x] Test dependency install
+- [x] Test asset placement
+- [x] Validate tokenizer on server
+- [x] Validate real dataset on server
+- [x] Test 10-step run on server
+- [x] Run 5k-step server pilot
+- [x] Review server training throughput and stability
+- [x] Continue training through step 50,000
+- [x] Evaluate the 50k checkpoint on a fixed validation slice
+- [x] Preserve 5k/10k/20k/50k checkpoints and supporting artifacts
+- [ ] Evaluate all preserved checkpoints on the same fixed validation slice
+- [ ] Run the fixed 10-prompt generation suite
+- [ ] Write final Pretrain V0 notes and select the SFT base checkpoint
 
 Recommended server spec:
 
