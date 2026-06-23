@@ -142,7 +142,7 @@ loss 曲线可展示
 
 ## V0 Todo
 
-当前进度（2026-06-22）：64M 模型已在租用服务器训练到 50k step；5k/10k/20k/50k 完整 checkpoint、日志、配置、tokenizer、评估报告和生成样例均已下载并通过归档 SHA256 校验。50k 固定验证集 loss 为 `2.25228`，perplexity 为 `9.509392`。下一步在独立 GPU 机器上完成多 checkpoint 统一评估和 10-prompt 生成套件，然后进入 Version 1。
+当前进度（2026-06-23）：64M 模型已在租用服务器训练到 50k step；5k/10k/20k/50k 完整 checkpoint、日志、配置、tokenizer、评估报告和生成样例均已下载并通过归档 SHA256 校验。所有保留 checkpoint 已在同一固定 1k-example validation slice 上完成统一评估，50k checkpoint 最优，loss 为 `2.251902`，perplexity 为 `9.505802`。固定 10-prompt generation suite 已完成，结果显示模型能生成基本中文段落但重复明显，适合作为 tool-use SFT 的 base，不适合作为成品助手。Version 1 special tokens 与 embedding resize 已完成：vocab 从 6400 扩到 6404，tool-use init checkpoint 已保存到 `outputs/tooluse_init/pretrain_step_050000_tooluse_init.pt`。Version 2 数据转换已完成：800 条 train trajectories 转成 2530 条 next-action SFT 样本，200 条 eval trajectories 转成 637 条 eval 样本。200-step MiniMind SFT 后，next-action eval 上 wrapper/json/tool-name accuracy 均为 100%，target exact match 为 68.6%。WebNav-RL rollout eval 已接通：SFT-200step 在 eval20 上 0 format error、100% submitted rate，但 task success 为 0%。约 1 epoch SFT 后，eval20 success 提升到 2/20，仍保持 0 format error 和 100% submitted rate；主要失败模式仍是 click/answer 参数塌缩。下一步更适合做 failure-driven data balancing 或 verifier reranking，专门改善 observation-grounded argument selection。
 
 ### 0.1 整理 pretrain checkpoint
 
@@ -178,14 +178,14 @@ minimind_track/notes/pretrain_notes.md
 
 内容包括：
 
-- [ ] 为什么做 MiniMind pretrain
-- [ ] 模型结构简介
-- [ ] tokenizer 简介
-- [ ] 数据来源
-- [ ] 训练配置
-- [ ] loss 曲线
-- [ ] 已知问题
-- [ ] 下一步如何接 tool-use SFT
+- [x] 为什么做 MiniMind pretrain
+- [x] 模型结构简介
+- [x] tokenizer 简介
+- [x] 数据来源
+- [x] 训练配置
+- [x] loss 曲线
+- [x] 已知问题
+- [x] 下一步如何接 tool-use SFT
 
 ---
 
@@ -195,10 +195,10 @@ minimind_track/notes/pretrain_notes.md
 
 Todo：
 
-- [ ] 写 `eval_minimind_generation.py`
+- [x] 写固定 prompt generation suite
 - [x] 输入简单 prompt
 - [x] 检查输出是否正常
-- [ ] 保存 10 条生成样例
+- [x] 保存 10 条生成样例
 
 测试 prompt 示例：
 
@@ -257,11 +257,29 @@ Todo：
 
 Todo：
 
-- [ ] 确定 special token 列表
-- [ ] 写入 `special_tokens.json`
-- [ ] 更新 tokenizer
-- [ ] 确认 token id 不冲突
-- [ ] 保存 tokenizer config
+- [x] 确定 special token 列表
+- [x] 写入 `configs/tool_special_tokens.json`
+- [x] 更新 tokenizer
+- [x] 确认 token id 不冲突
+- [x] 保存 tokenizer config
+
+实际结果：
+
+```text
+已有单 token:
+<tool_call> id 21
+</tool_call> id 22
+<tool_response> id 23
+</tool_response> id 24
+<think> id 25
+</think> id 26
+
+新增单 token:
+<answer> id 6400
+</answer> id 6401
+<observe> id 6402
+</observe> id 6403
+```
 
 ---
 
@@ -271,16 +289,25 @@ Todo：
 
 Todo：
 
-- [ ] 加载 MiniMind pretrain checkpoint
-- [ ] 加载新 tokenizer
-- [ ] resize token embeddings
-- [ ] 初始化新增 token embedding
-- [ ] 保存新的 init checkpoint
+- [x] 加载 MiniMind pretrain checkpoint
+- [x] 加载新 tokenizer
+- [x] resize token embeddings
+- [x] 初始化新增 token embedding
+- [x] 保存新的 init checkpoint
 
 注意：
 
 ```text
 新增 token 的 embedding 可以随机初始化，也可以用已有相近 token 的均值初始化。
+```
+
+实际输出：
+
+```text
+outputs/tooluse_init/tokenizer/
+outputs/tooluse_init/pretrain_step_050000_tooluse_init.pt
+reports/tooluse_init_report.json
+docs/step_10_tooluse_init.md
 ```
 
 ---
@@ -334,11 +361,11 @@ outputs/trajectories/expert_eval.jsonl
 
 Todo：
 
-- [ ] 读取 WebGym-RL expert trajectories
-- [ ] 转成 MiniMind SFT 格式
-- [ ] 检查每条样本的 tool call JSON
-- [ ] 过滤过长样本
-- [ ] 保存为 `sft_train.jsonl` 和 `sft_eval.jsonl`
+- [x] 读取 WebGym-RL expert trajectories
+- [x] 转成 MiniMind SFT 格式
+- [x] 检查每条样本的 tool call JSON
+- [x] 过滤过长样本
+- [x] 保存为 MiniMind next-action SFT train/eval JSONL
 
 建议第一版数据量：
 
@@ -366,10 +393,10 @@ eval: 100–300 条
 
 Todo：
 
-- [ ] 确定 MiniMind 训练模板
-- [ ] 写格式转换脚本
+- [x] 确定 MiniMind 训练模板
+- [x] 写格式转换脚本
 - [ ] 随机抽查 50 条样本
-- [ ] 检查标签 mask 是否正确
+- [x] 检查标签 mask 是否正确
 
 ---
 
@@ -377,14 +404,16 @@ Todo：
 
 Todo：
 
-- [ ] 写 `train_sft_minimind.py`
-- [ ] 加载 pretrain checkpoint
-- [ ] 加载新 tokenizer
-- [ ] 设置 max_seq_len
-- [ ] 设置 batch size 和 gradient accumulation
+- [x] 写 `train_sft_minimind.py`
+- [x] 加载 pretrain checkpoint
+- [x] 加载新 tokenizer
+- [x] 设置 max_seq_len
+- [x] 设置 batch size 和 gradient accumulation
 - [ ] 跑 1–3 epoch
-- [ ] 保存 SFT checkpoint
-- [ ] 记录 loss 曲线
+- [x] 保存 SFT smoke checkpoint
+- [x] 记录 smoke loss 曲线
+- [x] 跑 200-step local SFT
+- [x] 评估 next-action format accuracy
 
 建议配置：
 
@@ -401,6 +430,25 @@ learning_rate: 从较小值开始
 SFT loss 正常下降
 checkpoint 可以加载
 模型能输出 tool_call 格式
+```
+
+当前 200-step 结果：
+
+```text
+wrapper_ok: 100.0%
+json_ok: 100.0%
+valid_tool_name: 100.0%
+tool_name_match: 100.0%
+target_exact_match: 68.6%
+```
+
+当前约 1 epoch rollout 结果：
+
+```text
+eval20 success: 2/20
+submitted_rate: 100.0%
+format_errors: 0
+主要问题: click/answer 参数塌缩
 ```
 
 ---
@@ -428,9 +476,11 @@ Todo：
 
 - [ ] 写 MiniMind rollout runner
 - [ ] 跑 pretrain-only eval
-- [ ] 跑 SFT eval
-- [ ] 输出 eval report
-- [ ] 保存失败案例
+- [x] 跑 SFT next-action format eval
+- [x] 输出 next-action eval report
+- [x] 跑 rollout-level SFT eval
+- [x] 输出 rollout-level eval report
+- [x] 保存 rollout failure cases
 
 完成标准：
 

@@ -1,0 +1,28 @@
+{
+  "required_special_tokens": [
+    "<tool_call>",
+    "</tool_call>",
+    "<tool_response>",
+    "</tool_response>",
+    "<answer>",
+    "</answer>",
+    "<observe>",
+    "</observe>",
+    "<think>",
+    "</think>"
+  ],
+  "sft_boundary_tokens": [
+    "<tool_call>",
+    "</tool_call>",
+    "<tool_response>",
+    "</tool_response>",
+    "<answer>",
+    "</answer>"
+  ],
+  "optional_tokens": [
+    "<observe>",
+    "</observe>",
+    "<think>",
+    "</think>"
+  ]
+}

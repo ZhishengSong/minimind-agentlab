@@ -1,0 +1,25 @@
+{
+  "num_examples": 2530,
+  "skipped_for_length": 0,
+  "tool_counts": {
+    "open_page": 800,
+    "click": 930,
+    "submit_answer": 800
+  },
+  "token_lengths": {
+    "total_min": 172,
+    "total_mean": 485.21,
+    "total_p50": 569.0,
+    "total_p95": 838.0,
+    "total_max": 954,
+    "prompt_mean": 447.7,
+    "target_mean": 37.51
+  },
+  "input": "D:\\job\\Program\\WebNav-RL\\training\\sft_train.jsonl",
+  "output": "outputs\\minimind_sft\\sft_train_next_action.jsonl",
+  "source_rows": 800,
+  "include_system": true,
+  "include_failures": false,
+  "max_seq_len": 2048,
+  "tokenizer_path": "outputs\\tooluse_init\\tokenizer"
+}

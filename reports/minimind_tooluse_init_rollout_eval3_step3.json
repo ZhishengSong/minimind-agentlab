@@ -1,0 +1,30 @@
+{
+  "checkpoint": "outputs\\tooluse_init\\pretrain_step_050000_tooluse_init.pt",
+  "tasks": "D:/job/Program/WebNav-RL/tasks/eval_tasks.jsonl",
+  "limit": 3,
+  "max_steps": 3,
+  "summary": {
+    "total": 3,
+    "success": 0,
+    "success_rate": 0.0,
+    "submitted": 0,
+    "submitted_rate": 0.0,
+    "invalid_tool_calls": 9,
+    "format_errors": 9,
+    "avg_steps": 3.0,
+    "by_template": {
+      "shopping_price_lookup": {
+        "total": 1,
+        "success": 0
+      },
+      "shopping_name": {
+        "total": 1,
+        "success": 0
+      },
+      "course_code": {
+        "total": 1,
+        "success": 0
+      }
+    }
+  }
+}

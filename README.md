@@ -34,11 +34,16 @@ Completed:
 Current status and limitations:
 
 - Local 10/100/500-step smoke runs and rented-server 5k/50k runs have completed.
-- The 50k checkpoint reached fixed-slice validation loss `2.25228` and perplexity `9.509392`.
+- The preserved 5k/10k/20k/50k checkpoints have been evaluated on the same fixed 1k-example validation slice.
+- The 50k checkpoint is the current SFT base candidate with fixed-slice validation loss `2.251902` and perplexity `9.505802`.
 - Full 5k/10k/20k/50k checkpoints, logs, configs, tokenizer, reports, and samples were exported from the rented server and SHA256-verified locally on 2026-06-22.
 - Large checkpoints and the real `pretrain_t2t_mini.jsonl` dataset are intentionally not committed to Git.
 - The current non-GPU workstation is used for source and artifact management; checkpoint evaluation and post-training will run on a separate GPU machine.
-- Phase 2 tool-use SFT and Agentic RL modules have not started yet.
+- A fixed 10-prompt generation suite has been run for the 50k checkpoint; outputs are coherent enough for inspection but repetitive.
+- Tool-use tokenizer adaptation has produced a resized vocab-6404 init checkpoint from the 50k pretrain base.
+- A 200-step MiniMind tool-use SFT run reaches 100% wrapper/JSON/tool-name accuracy and 68.6% exact target match on 637 next-action eval examples.
+- Rollout eval has started: SFT-200step reaches 0 format errors and 100% submitted rate on eval20, while about one epoch of SFT improves task success to 2/20 but still shows argument selection collapse.
+- Agentic RL training has not started yet.
 
 ## Architecture
 
@@ -342,10 +347,10 @@ The intent is to learn and demonstrate the engineering internals behind small LL
 
 Near term:
 
-- Run fixed-slice evaluation for the preserved 5k/10k/20k/50k checkpoints on the GPU machine
-- Run a fixed 10-prompt generation suite and finalize the pretraining V0 report
-- Select the 50k checkpoint as the candidate base for tool-use SFT
-- Design tool-use special tokens, update the tokenizer, and resize model embeddings
+- Run the server SFT/rollout sweep described in `docs/server_experiment_plan.md`
+- Add failure-driven data balancing for click/answer argument selection
+- Implement verifier-guided best-of-N reranking for valid MiniMind tool calls
+- Rerun rollout eval20/eval50 after data balancing or reranking
 
 Next research layer:
 

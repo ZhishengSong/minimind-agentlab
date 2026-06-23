@@ -1,0 +1,105 @@
+{
+  "base_checkpoint": "minimind-50k-artifacts/checkpoints/pretrain_step_050000.pt",
+  "output_checkpoint": "outputs/tooluse_init/pretrain_step_050000_tooluse_init.pt",
+  "base_tokenizer": "data/minimind/tokenizer",
+  "output_tokenizer": "outputs/tooluse_init/tokenizer",
+  "old_vocab_size": 6400,
+  "new_vocab_size": 6404,
+  "existing_tokens": [
+    "<tool_call>",
+    "</tool_call>",
+    "<tool_response>",
+    "</tool_response>",
+    "<think>",
+    "</think>"
+  ],
+  "added_tokens": [
+    "<answer>",
+    "</answer>",
+    "<observe>",
+    "</observe>"
+  ],
+  "added_count": 4,
+  "token_summary": [
+    {
+      "token": "<tool_call>",
+      "id": 21,
+      "encoded_ids": [
+        21
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "</tool_call>",
+      "id": 22,
+      "encoded_ids": [
+        22
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "<tool_response>",
+      "id": 23,
+      "encoded_ids": [
+        23
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "</tool_response>",
+      "id": 24,
+      "encoded_ids": [
+        24
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "<answer>",
+      "id": 6400,
+      "encoded_ids": [
+        6400
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "</answer>",
+      "id": 6401,
+      "encoded_ids": [
+        6401
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "<observe>",
+      "id": 6402,
+      "encoded_ids": [
+        6402
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "</observe>",
+      "id": 6403,
+      "encoded_ids": [
+        6403
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "<think>",
+      "id": 25,
+      "encoded_ids": [
+        25
+      ],
+      "is_single_token": true
+    },
+    {
+      "token": "</think>",
+      "id": 26,
+      "encoded_ids": [
+        26
+      ],
+      "is_single_token": true
+    }
+  ]
+}

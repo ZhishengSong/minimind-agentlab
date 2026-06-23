@@ -219,6 +219,7 @@ Current training decision:
 - Keep the current workstation for source, documentation, and artifact backup; it has no GPU requirement.
 - Use the separate GPU machine for checkpoint loading, fixed evaluation, generation, SFT, and RL.
 - Finish Pretrain V0, then follow the Track TODO through special tokens and tool-use SFT before GRPO.
+- Pretrain V0 is now closed; Version 1 tool-use tokenizer adaptation has produced an init checkpoint.
 
 ### Step 10: Real Data Validation
 
@@ -295,9 +296,34 @@ Do this only after local/short smoke runs pass.
 - [x] Continue training through step 50,000
 - [x] Evaluate the 50k checkpoint on a fixed validation slice
 - [x] Preserve 5k/10k/20k/50k checkpoints and supporting artifacts
-- [ ] Evaluate all preserved checkpoints on the same fixed validation slice
-- [ ] Run the fixed 10-prompt generation suite
-- [ ] Write final Pretrain V0 notes and select the SFT base checkpoint
+- [x] Evaluate all preserved checkpoints on the same fixed validation slice
+- [x] Run the fixed 10-prompt generation suite
+- [x] Write final Pretrain V0 notes and select the SFT base checkpoint
+
+Pretrain V0 closure outputs:
+
+```text
+docs/pretrain_v0_notes.md
+reports/pretrain_v0_checkpoint_eval.json
+reports/pretrain_v0_checkpoint_eval.md
+reports/pretrain_v0_generation_suite.jsonl
+reports/pretrain_v0_generation_suite.md
+```
+
+Current SFT base decision:
+
+```text
+minimind-50k-artifacts/checkpoints/pretrain_step_050000.pt
+```
+
+Fixed-slice checkpoint comparison on 2026-06-23:
+
+| Checkpoint | Step | Loss | Perplexity |
+| --- | ---: | ---: | ---: |
+| `pretrain_step_005000.pt` | 5,000 | 2.986131 | 19.808900 |
+| `pretrain_step_010000.pt` | 10,000 | 2.703081 | 14.925641 |
+| `pretrain_step_020000.pt` | 20,000 | 3.084734 | 21.861646 |
+| `pretrain_step_050000.pt` | 50,000 | 2.251902 | 9.505802 |
 
 Recommended server spec:
 
@@ -358,7 +384,57 @@ python scripts/eval_pretrain_loss.py \
 
 ## Phase 2: Agentic RL Research Layer
 
-Not started yet. This is the post-foundation research phase.
+Started with tokenizer/checkpoint adaptation. Tool-use SFT and RL training have not started yet.
+
+### Step 14A: Tool-Use Tokenizer Init
+
+- [x] Define tool-use special token list in `configs/tool_special_tokens.json`
+- [x] Inspect existing tokenizer tokenization for tool boundary markers
+- [x] Confirm `<tool_call>`, `</tool_call>`, `<tool_response>`, `</tool_response>`, `<think>`, and `</think>` already exist as single tokens
+- [x] Add `<answer>`, `</answer>`, `<observe>`, and `</observe>` as special tokens
+- [x] Resize 50k checkpoint embeddings from vocab 6400 to 6404
+- [x] Save tool-use tokenizer to `outputs/tooluse_init/tokenizer`
+- [x] Save tool-use init checkpoint to `outputs/tooluse_init/pretrain_step_050000_tooluse_init.pt`
+- [x] Validate tokenizer/checkpoint loading and a forward pass with new token IDs
+- [x] Validate `scripts/generate.py` can load the tool-use init checkpoint
+- [x] Write `docs/step_10_tooluse_init.md`
+
+### Step 14B: MiniMind Tool-Use SFT Data
+
+- [x] Locate WebNav-RL SFT train/eval data
+- [x] Implement `scripts/convert_webgym_to_minimind_sft.py`
+- [x] Implement `scripts/inspect_minimind_sft.py`
+- [x] Convert 800 train trajectories into 2530 next-action examples
+- [x] Convert 200 eval trajectories into 637 next-action examples
+- [x] Validate tool-call JSON for all assistant targets during conversion
+- [x] Tokenize with `outputs/tooluse_init/tokenizer`
+- [x] Confirm no converted examples exceed 2048 tokens
+- [x] Implement `scripts/train_sft_minimind.py`
+- [x] Add `configs/sft_minimind_webnav_smoke.yaml`
+- [x] Run SFT dry-run and verify assistant-only supervised tokens
+- [x] Run a 3-step SFT smoke on 8 examples
+- [x] Save smoke checkpoint at `checkpoints/sft_minimind_webnav_smoke3/latest.pt`
+- [x] Verify `scripts/generate.py` can load the SFT smoke checkpoint
+- [x] Run configured 20-step SFT smoke on all converted train examples
+- [x] Fix low-level tokenizer eos detection for `<|im_end|>`
+- [x] Run 200-step local CUDA/bf16 SFT pass
+- [x] Add `scripts/generate_from_sft_example.py`
+- [x] Add `scripts/eval_minimind_sft_format.py`
+- [x] Evaluate 200-step checkpoint on all 637 eval next-action examples
+- [x] Confirm 200-step checkpoint reaches 100% wrapper/JSON/tool-name format accuracy
+- [x] Confirm 200-step checkpoint reaches 68.6% exact target match on next-action eval
+- [x] Write `docs/step_11_minimind_sft_data.md`
+- [x] Implement `scripts/run_minimind_webnav_eval.py`
+- [x] Run SFT-200step rollout eval20 in WebNav-RL
+- [x] Run constrained tooluse-init rollout baseline
+- [x] Confirm SFT-200step has 0 rollout format errors on eval20
+- [x] Confirm SFT-200step has 100% submitted rate but 0% task success on eval20
+- [x] Identify click/answer argument collapse as the main rollout failure mode
+- [x] Run approximately one-epoch MiniMind SFT at 320 steps
+- [x] Evaluate SFT-epoch1 on rollout eval20
+- [x] Confirm SFT-epoch1 improves rollout success to 2/20 while keeping 0 format errors
+- [x] Confirm argument collapse remains the main bottleneck after longer SFT
+- [x] Write `docs/step_12_minimind_rollout_eval.md`
 
 ### Step 14: Tool-Use Environment
 
@@ -372,7 +448,8 @@ Not started yet. This is the post-foundation research phase.
 
 ### Step 15: Tool Call Parser And Verifier
 
-- [ ] Implement tool-call parser
+- [x] Implement offline MiniMind SFT tool-call format parser/evaluator
+- [x] Implement rollout-level tool-call parser integration through WebNav-RL adapter
 - [ ] Implement final-answer parser
 - [ ] Implement format verifier
 - [ ] Implement tool selection verifier

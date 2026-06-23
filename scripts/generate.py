@@ -80,7 +80,8 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Generate text from a MiniMind checkpoint.")
     parser.add_argument("--checkpoint", required=True, help="Path to checkpoint .pt file.")
-    parser.add_argument("--prompt", default="MiniMind", help="Prompt text.")
+    parser.add_argument("--prompt", default="MiniMind", help="Prompt text. Ignored when --prompt-file is set.")
+    parser.add_argument("--prompt-file", default=None, help="Optional UTF-8 text file to use as the prompt.")
     parser.add_argument("--tokenizer-path", default=None, help="Tokenizer path. Defaults to checkpoint train config.")
     parser.add_argument("--device", default="cpu", help="cpu, cuda, or auto.")
     parser.add_argument("--max-new-tokens", type=int, default=64)
@@ -107,7 +108,8 @@ def main() -> None:
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
 
-    prompt_ids = tokenizer.encode(args.prompt, add_special_tokens=False)
+    prompt = Path(args.prompt_file).read_text(encoding="utf-8") if args.prompt_file else args.prompt
+    prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
     if not prompt_ids:
         raise ValueError("Prompt produced no tokens.")
     input_ids = torch.tensor([prompt_ids], dtype=torch.long, device=device)
@@ -131,7 +133,7 @@ def main() -> None:
     print(f"checkpoint: {args.checkpoint}")
     print(f"step: {checkpoint.get('step')}")
     print(f"tokenizer: {type(tokenizer).__name__}")
-    print(f"prompt: {args.prompt}")
+    print(f"prompt: {prompt}")
     print("generated:")
     print(text)
     print(f"saved: {output_path}")

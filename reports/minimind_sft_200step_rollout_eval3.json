@@ -1,0 +1,30 @@
+{
+  "checkpoint": "checkpoints\\sft_minimind_webnav_200step\\latest.pt",
+  "tasks": "D:/job/Program/WebNav-RL/tasks/eval_tasks.jsonl",
+  "limit": 3,
+  "max_steps": null,
+  "summary": {
+    "total": 3,
+    "success": 0,
+    "success_rate": 0.0,
+    "submitted": 3,
+    "submitted_rate": 1.0,
+    "invalid_tool_calls": 0,
+    "format_errors": 0,
+    "avg_steps": 3.0,
+    "by_template": {
+      "shopping_price_lookup": {
+        "total": 1,
+        "success": 0
+      },
+      "shopping_name": {
+        "total": 1,
+        "success": 0
+      },
+      "course_code": {
+        "total": 1,
+        "success": 0
+      }
+    }
+  }
+}

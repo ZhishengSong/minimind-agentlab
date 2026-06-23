@@ -55,8 +55,8 @@ class TokenizersWrapper:
         self.tokenizer = tokenizer
         vocab = tokenizer.get_vocab()
         self.vocab_size = int(tokenizer.get_vocab_size())
-        self.pad_token_id = int(vocab.get("<pad>", vocab.get("[PAD]", 0)))
-        eos = vocab.get("<eos>", vocab.get("</s>", vocab.get("[EOS]")))
+        self.pad_token_id = int(vocab.get("<pad>", vocab.get("[PAD]", vocab.get("<|endoftext|>", 0))))
+        eos = vocab.get("<eos>", vocab.get("</s>", vocab.get("[EOS]", vocab.get("<|im_end|>"))))
         self.eos_token_id = int(eos) if eos is not None else None
 
     def encode(self, text: str, add_special_tokens: bool = False) -> list[int]:
