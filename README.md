@@ -43,6 +43,7 @@ Current status and limitations:
 - Tool-use tokenizer adaptation has produced a resized vocab-6404 init checkpoint from the 50k pretrain base.
 - Server SFT Epoch1/2/3 reached `72% / 96% / 100%` exact match on the same 100-example next-action slice.
 - Epoch3 is the selected SFT checkpoint and reaches 100% wrapper/JSON/tool-name accuracy plus `628/637 = 98.59%` argument/target exact match on the full next-action eval set.
+- In the fixed WebNav-RL V1 closed-loop benchmark, Epoch3 completes `191/200 = 95.5%` tasks with 100% submission, zero invalid tool calls, and zero format errors.
 - The selected Epoch3 checkpoint was downloaded locally and SHA256-verified.
 - Fixed-slice pretrain regression shows loss `2.252283 -> 2.569051` and perplexity `9.509420 -> 13.053436`, a measurable specialization tradeoff.
 - Agentic RL training has not started yet.
@@ -350,15 +351,11 @@ The intent is to learn and demonstrate the engineering internals behind small LL
 Near term:
 
 - Review `reports/minimind_sft_v1_final.md` as the closed SFT V1 milestone
-- Treat rollout, best-of-N, and GRPO as optional next research milestones
+- Preserve Epoch3 eval200 (`191/200`) as the closed-loop SFT baseline
+- Treat targeted data balancing, best-of-N, and GRPO as optional next research milestones
 
 Next research layer:
 
-- WebGym-RL trajectory conversion and assistant-only SFT loss masking
-- Tool-use SFT and pretrain-vs-SFT evaluation
-- tool-use benchmark
-- tool call parser
-- rule-based verifier
 - best-of-N verifier reranking
 - GRPO-style verifier-based Agentic RL
 - reward-hacking analysis

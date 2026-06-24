@@ -446,6 +446,10 @@ Tool-use tokenizer adaptation and the first complete SFT milestone are finished.
 - [x] Select `checkpoints/sft_minimind_webnav_epoch3/latest.pt` as the final SFT checkpoint
 - [x] Save Epoch3 checkpoint SHA256: `77f29f3f5fd812e2fa05ba3afb6af85b0d319dad2de6e7fbff52e72d35e87ce6`
 - [x] Download and SHA256-verify Epoch3 checkpoint locally at `checkpoints/sft_minimind_webnav_epoch3_server/latest.pt`
+- [x] Run Epoch3 closed-loop WebNav-RL eval20: `20/20 = 100%`
+- [x] Run Epoch3 closed-loop WebNav-RL eval200: `191/200 = 95.5%`
+- [x] Verify eval200 has 100% submission, 0 invalid tool calls, and 0 format errors
+- [x] Analyze all 9 rollout failures in `reports/minimind_sft_epoch3_rollout_failure_analysis.md`
 
 ### SFT Milestone Evaluation Priority
 
@@ -466,7 +470,7 @@ Strongly recommended before claiming that SFT preserves base-model quality:
 Optional comparisons, not blockers for the current SFT milestone:
 
 - [ ] Run Epoch2 full 637-example evaluation for a complete learning-curve table
-- [ ] Run additional rollout/environment evaluation in the separate WebNav-RL project
+- [x] Run additional rollout/environment evaluation in the separate WebNav-RL project
 - [ ] Add best-of-N/verifier reranking experiments
 - [ ] Start GRPO-style Agentic RL experiments
 
@@ -550,10 +554,10 @@ GQA, SwiGLU, RMSNorm, tied embeddings, streaming JSONL data loading,
 AdamW pretraining, checkpoint/resume, generation, and reproducible tiny E2E validation.
 ```
 
-Future Agentic RL bullet:
+Current tool-use SFT bullet:
 
 ```text
-Built a verifier-based tool-use evaluation and Agentic RL pipeline with
-automatic trajectory parsing, rule-based rewards, best-of-N reranking,
-and GRPO-style policy optimization for small language models.
+Adapted the from-scratch 63M LM for structured tool use and reached 98.59%
+held-out next-action exact match plus 95.5% success on a fixed 200-task
+closed-loop WebNav benchmark, with zero invalid or malformed tool calls.
 ```

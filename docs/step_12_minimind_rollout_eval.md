@@ -195,14 +195,31 @@ This gives a useful research conclusion:
 For a from-scratch 63M LM, tool-call syntax and tool sequencing are learnable with small SFT, while grounded element selection remains the bottleneck.
 ```
 
-## Next Step
+## SFT-Epoch3 Eval200
 
-The next practical experiment is one of:
+The selected Epoch3 checkpoint was evaluated on the complete fixed WebNav-RL V1 eval set:
 
 ```text
-1. Add supervised loss weighting or extra examples for click argument selection.
-2. Implement verifier reranking / best-of-N to select among multiple valid tool calls.
-3. Continue SFT for 2-3 epochs only if accompanied by eval-based early stopping.
+tasks: 200
+success: 191/200 = 95.5%
+submitted_rate: 100.0%
+invalid_tool_calls: 0
+format_errors: 0
+avg_steps: 3.185
 ```
 
-The most informative next step is failure-driven reranking or data balancing, because format is now stable and the remaining failure mode is argument grounding rather than syntax.
+All 94 course tasks succeeded. Shopping tasks reached 97/106. The nine failures were valid but incorrect click choices concentrated in three templates: `shopping_price_lookup`, `shopping_color_category`, and `shopping_under_100_lowest_price`. Full details are recorded in `reports/minimind_sft_epoch3_rollout_failure_analysis.md`.
+
+This closes the SFT rollout milestone. The result is specific to the fixed deterministic WebNav-RL V1 benchmark and is not a claim of general web-browsing ability.
+
+## Next Step
+
+Any further experiment should preserve Epoch3 eval200 as the SFT baseline. The most targeted options are:
+
+```text
+1. Balance or augment the three failed shopping patterns.
+2. Implement verifier reranking / best-of-N to select among multiple valid tool calls.
+3. Start a controlled GRPO experiment against the frozen SFT baseline.
+```
+
+Further plain SFT epochs are not justified because protocol accuracy is perfect and the remaining failures are narrow argument-selection errors.

@@ -142,7 +142,7 @@ loss 曲线可展示
 
 ## V0 Todo
 
-当前进度（2026-06-24）：Pretrain V0、tool-use tokenizer adaptation 和 MiniMind tool-use SFT V1 均已完成。服务器独立完成 Epoch1/2/3 SFT；同一 eval100 上 target exact match 依次为 `72% / 96% / 100%`。Epoch3 在完整 637-example next-action eval 上达到 wrapper/JSON/tool-name `100%`，argument/target exact match `628/637 = 98.59%`，因此选为最终 SFT checkpoint。服务器 checkpoint 已下载到本地并通过 SHA256 `77f29f3f5fd812e2fa05ba3afb6af85b0d319dad2de6e7fbff52e72d35e87ce6` 校验；本地 CPU 加载/生成 smoke 和最终 SFT V1 报告也已完成。固定 pretrain val 回归检查显示 loss 从 `2.252283` 升至 `2.569051`、perplexity 从 `9.509420` 升至 `13.053436`，说明专业化带来可测但非崩坏式的通用能力退化。Epoch2 全量 eval、WebNav-RL rollout、best-of-N 和 GRPO 均为可选后续研究。
+当前进度（2026-06-24）：Pretrain V0、tool-use tokenizer adaptation 和 MiniMind tool-use SFT V1 均已完成。服务器独立完成 Epoch1/2/3 SFT；同一 eval100 上 target exact match 依次为 `72% / 96% / 100%`。Epoch3 在完整 637-example next-action eval 上达到 wrapper/JSON/tool-name `100%`，argument/target exact match `628/637 = 98.59%`，因此选为最终 SFT checkpoint。固定 WebNav-RL V1 的 200-task 闭环 rollout 达到 `191/200 = 95.5%` success、100% submitted、0 invalid tool calls 和 0 format errors；9 个失败均为三个购物模板中的合法但错误 click。服务器 checkpoint 已下载并通过 SHA256 校验，本地 CPU smoke、pretrain loss 回归检查和最终报告也已完成。后续只剩可选的 Epoch2 全量 eval、best-of-N 和 GRPO 研究。
 
 ### 0.1 整理 pretrain checkpoint
 
@@ -469,7 +469,8 @@ Epoch3 eval637 target exact match: 98.59% (628/637)
 已完成且必要：Epoch3 全量 eval637、checkpoint 下载、SHA256 校验
 已完成收尾：本地 checkpoint load/generation smoke、最终 SFT 报告
 已完成建议项：SFT 前后固定 pretrain val loss 对比
-可选：Epoch2 全量 eval637、跨项目 rollout、best-of-N、GRPO
+已完成扩展：WebNav-RL eval200 闭环 rollout（191/200，95.5%）
+可选：Epoch2 全量 eval637、best-of-N、GRPO
 ```
 
 ---
@@ -946,21 +947,21 @@ SFT vs GRPO eval
 
 ## 中文版
 
-**MiniMind Track：从零训练小模型的 Tool-Use SFT 与 Agentic RL 边界实验**
+**MiniMind Track：从零训练 63M 小模型与 Tool-Use SFT 闭环评估**
 
-- 基于自训练 MiniMind 小模型整理 pretrain checkpoint、训练配置与 loss 曲线，并在原有 tokenizer 基础上加入 `<tool_call>`、`<tool_response>`、`<answer>` 等 tool-use special tokens，适配 WebGym-RL 多轮工具调用任务格式。
-- 复用 WebGym-RL 中规则专家生成的网页导航 trajectories，对 MiniMind 进行 tool-use SFT，使模型学习标准化工具调用格式、工具响应理解和简单网页任务答案提交流程。
-- 接入 WebGym-RL 的 rule-based verifier，将工具调用格式、合法工具名、最终答案正确性、无效操作和步数惩罚转化为 reward，并在 MiniMind-SFT checkpoint 上进行小规模 GRPO 后训练。
-- 对比 MiniMind Pretrain-only、MiniMind-SFT、MiniMind-SFT-GRPO 以及 Qwen 0.5B/0.6B 系列模型在 Tool Call Format Accuracy、Valid JSON Rate、Invalid Tool Call Rate、Task Success Rate 等指标上的表现，分析 from-scratch tiny LM 在 Agentic RL 任务中的能力边界。
+- 使用 PyTorch 从零实现约 63.06M 参数的 decoder-only causal LM，覆盖 RoPE、GQA、SwiGLU、RMSNorm、预训练、checkpoint/resume、生成与统一验证，并完成 50k-step GPU 预训练。
+- 将 tokenizer 从 6400 扩展到 6404 个 token，复用 WebNav-RL 的 800 条专家轨迹构造 2530 个 assistant-only next-action SFT 样本，完成 Epoch1/2/3 独立训练与 checkpoint 校验。
+- Epoch3 在 637 个 held-out next-action 样本上达到 `98.59%` exact match，并在固定 WebNav-RL V1 的 200-task 多轮闭环评估中达到 `191/200 = 95.5%` success、100% submitted、0 invalid tool calls 和 0 format errors。
+- 对 9 个失败轨迹进行逐例分析，定位为三个购物模板中的动作频率偏置与相邻元素选择错误；同时量化 SFT 后 pretrain loss 从 `2.2523` 上升至 `2.5691` 的专业化代价。
 
 ## English Version
 
-**MiniMind Track: Tool-Use SFT and Agentic RL Boundary Study for a From-Scratch Tiny LM**
+**MiniMind Track: From-Scratch 63M LM and Closed-Loop Tool-Use SFT Evaluation**
 
-- Organized a self-trained MiniMind pretraining checkpoint with reproducible training configurations, loss curves, and generation tests; extended the tokenizer with tool-use special tokens such as `<tool_call>`, `<tool_response>`, and `<answer>` for WebGym-RL style multi-turn tool interactions.
-- Reused rule-based expert trajectories from WebGym-RL to perform tool-use SFT, enabling the tiny LM to learn structured tool-call generation, observation-conditioned action prediction, and answer submission for simple web navigation tasks.
-- Integrated the WebGym-RL rule-based verifier as a programmable reward function, combining tool-call format validity, valid tool names, final answer correctness, invalid action penalties, and step penalties; applied small-scale GRPO on top of the MiniMind-SFT checkpoint.
-- Compared MiniMind Pretrain-only, MiniMind-SFT, MiniMind-SFT-GRPO, and Qwen 0.5B/0.6B baselines on Tool Call Format Accuracy, Valid JSON Rate, Invalid Tool Call Rate, and Task Success Rate, analyzing the capability boundary of from-scratch tiny LMs in agentic RL tasks.
+- Implemented a 63.06M-parameter decoder-only causal LM from scratch in PyTorch with RoPE, GQA, SwiGLU, RMSNorm, pretraining, checkpoint/resume, generation, and fixed-slice evaluation; completed a 50k-step GPU pretraining run.
+- Expanded the tokenizer from 6,400 to 6,404 tokens and converted 800 WebNav-RL expert trajectories into 2,530 assistant-only next-action SFT examples for independent Epoch1/2/3 training.
+- Achieved 98.59% exact match on 637 held-out next-action examples and 191/200 (95.5%) success on the fixed WebNav-RL V1 closed-loop benchmark, with 100% submission and zero invalid or malformed tool calls.
+- Audited all nine failed trajectories and traced them to action-frequency bias and adjacent-element selection errors in three shopping templates; also measured the pretraining-loss regression introduced by specialization.
 
 ---
 
@@ -968,7 +969,7 @@ SFT vs GRPO eval
 
 可以这样讲：
 
-> 我的主项目是 WebGym-RL，用 Qwen 小模型验证可验证网页导航任务上的 SFT + GRPO 后训练效果。除此之外，我还做了一个 MiniMind Track，因为我之前已经从零训练了一个 MiniMind 小模型。我把它接入同一套 WebGym-RL 环境，用相同的 expert trajectories、tool interface、verifier reward 和 eval benchmark，继续做 tool-use SFT 和小规模 GRPO。这样我可以比较 from-scratch tiny LM 和成熟开源小模型在 agentic RL 中的差异。实验上，MiniMind 通过 SFT 可以明显提升 tool call 格式稳定性，但在多步任务规划和复杂指令理解上受限；GRPO 可以进一步降低 invalid action 或提升简单任务成功率，但不能完全弥补 pretraining 能力不足。这个 track 主要展示我对 pretraining、tokenizer、SFT、RL 后训练以及模型能力边界的完整理解。
+> 我先用 PyTorch 从零实现并训练了一个 63M MiniMind-style causal LM，然后把它接入 WebNav-RL 的固定工具环境。通过 tokenizer 扩展、assistant-only SFT 和三组独立训练，最终模型在 held-out next-action 上达到 98.59%，在 200 个闭环任务上达到 95.5%，且没有格式或非法工具调用。剩余 9 个失败都集中在三个购物模板的元素选择，我进一步用训练分布解释了这些稳定错误。这个 Track 展示的是从 pretraining、tokenizer、SFT 到闭环 Agent 评估的完整工程链路；GRPO 是后续研究，不是当前已完成结果。
 
 ---
 

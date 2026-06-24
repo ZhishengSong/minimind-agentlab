@@ -1,0 +1,66 @@
+{
+  "checkpoint": "checkpoints/sft_minimind_webnav_epoch3/latest.pt",
+  "tasks": "/root/autodl-tmp/WebNav-RL/tasks/eval_tasks.jsonl",
+  "limit": 200,
+  "max_steps": null,
+  "summary": {
+    "total": 200,
+    "success": 191,
+    "success_rate": 0.955,
+    "submitted": 200,
+    "submitted_rate": 1.0,
+    "invalid_tool_calls": 0,
+    "format_errors": 0,
+    "avg_steps": 3.185,
+    "by_template": {
+      "shopping_price_lookup": {
+        "total": 27,
+        "success": 24
+      },
+      "shopping_name": {
+        "total": 27,
+        "success": 27
+      },
+      "course_code": {
+        "total": 26,
+        "success": 26
+      },
+      "course_4_credit_department": {
+        "total": 6,
+        "success": 6
+      },
+      "shopping_color_category": {
+        "total": 26,
+        "success": 22
+      },
+      "shopping_category_highest_rating": {
+        "total": 13,
+        "success": 13
+      },
+      "course_department_time": {
+        "total": 26,
+        "success": 26
+      },
+      "course_department_highest_rating": {
+        "total": 11,
+        "success": 11
+      },
+      "shopping_category_lowest_price": {
+        "total": 11,
+        "success": 11
+      },
+      "course_title": {
+        "total": 20,
+        "success": 20
+      },
+      "course_4_credit_highest_rating": {
+        "total": 5,
+        "success": 5
+      },
+      "shopping_under_100_lowest_price": {
+        "total": 2,
+        "success": 0
+      }
+    }
+  }
+}

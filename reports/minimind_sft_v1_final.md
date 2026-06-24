@@ -4,7 +4,7 @@ Date: 2026-06-24
 
 ## Scope
 
-This milestone adapts the from-scratch 63M MiniMind checkpoint to structured next-action tool calling. It covers tokenizer adaptation, checkpoint embedding resize, SFT data conversion, assistant-only loss masking, local smoke tests, server Epoch1/2/3 training, full held-out evaluation, checkpoint selection, and local artifact verification.
+This milestone adapts the from-scratch 63M MiniMind checkpoint to structured next-action tool calling. It covers tokenizer adaptation, checkpoint embedding resize, SFT data conversion, assistant-only loss masking, local smoke tests, server Epoch1/2/3 training, full held-out next-action and closed-loop rollout evaluation, checkpoint selection, and local artifact verification.
 
 ## Base
 
@@ -61,6 +61,22 @@ target_exact_match: 628/637 = 98.59%
 format_errors: 0
 ```
 
+## Closed-Loop Rollout Evaluation
+
+Epoch3 was evaluated greedily on the fixed 200-task WebNav-RL V1 eval set:
+
+```text
+task_success: 191/200 = 95.5%
+submitted: 200/200 = 100%
+invalid_tool_calls: 0
+format_errors: 0
+average_model_steps: 3.185
+course_tasks: 94/94 = 100%
+shopping_tasks: 97/106 = 91.5%
+```
+
+All nine failures were valid but incorrect shopping clicks. They reduce to three repeated patterns: three `$24` price lookups selected BassFlow Mini instead of TravelMug One, four white-earbud queries selected the blue BassFlow Mini instead of QuietLite Pro, and two under-$100 minimum-price tasks selected the sixth filtered item instead of the seventh. See `reports/minimind_sft_epoch3_rollout_failure_analysis.md`.
+
 ## Selected Artifact
 
 Local path:
@@ -85,7 +101,7 @@ The downloaded checkpoint hash matches the server hash. A local CPU load/generat
 
 ## Decision
 
-Epoch3 is the final MiniMind Tool-Use SFT V1 checkpoint. Further plain SFT epochs are not currently justified because training loss is saturated and held-out next-action accuracy is already 98.59%.
+Epoch3 is the final MiniMind Tool-Use SFT V1 checkpoint. Further plain SFT epochs are not currently justified because training loss is saturated, held-out next-action accuracy is 98.59%, and closed-loop task success is 95.5% with no protocol errors.
 
 ## Pretrain Regression Check
 
@@ -108,7 +124,6 @@ Interpretation: tool-use SFT produces a measurable general-language specializati
 Optional future research:
 
 ```text
-environment rollout in a separate tool-use benchmark
 best-of-N verifier reranking
 GRPO-style Agentic RL
 ```
