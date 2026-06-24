@@ -1,0 +1,85 @@
+{
+  "checkpoint": "checkpoints/sft_minimind_webnav_epoch3/latest.pt",
+  "tasks": "/root/autodl-tmp/WebNav-RL/tasks/v2/eval_tasks.jsonl",
+  "metadata": "/root/autodl-tmp/WebNav-RL/pages/generated_pages_v2/metadata.json",
+  "limit": 20,
+  "max_steps": null,
+  "prompt_stats": {
+    "prompt_count": 103,
+    "compacted_prompt_count": 0,
+    "max_prompt_tokens": 574,
+    "prompt_token_budget": 2048
+  },
+  "summary": {
+    "total": 20,
+    "success": 0,
+    "success_rate": 0.0,
+    "submitted": 20,
+    "submitted_rate": 1.0,
+    "invalid_tool_calls": 83,
+    "format_errors": 0,
+    "avg_steps": 5.15,
+    "by_template": {
+      "v2_shopping_under_100_highest_rating": {
+        "total": 2,
+        "success": 0
+      },
+      "v2_shopping_category_lowest_price": {
+        "total": 2,
+        "success": 0
+      },
+      "v2_shopping_category_budget_highest_rating": {
+        "total": 2,
+        "success": 0
+      },
+      "v2_course_credits_department": {
+        "total": 2,
+        "success": 0
+      },
+      "v2_shopping_category_highest_rating": {
+        "total": 2,
+        "success": 0
+      },
+      "v2_course_credits_highest_rating": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_course_department_time": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_shopping_name": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_shopping_price_lookup": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_shopping_color_category": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_shopping_under_100_lowest_price": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_course_code": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_course_title": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_course_department_highest_rating": {
+        "total": 1,
+        "success": 0
+      },
+      "v2_course_department_credits_highest_rating": {
+        "total": 1,
+        "success": 0
+      }
+    }
+  }
+}

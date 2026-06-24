@@ -164,6 +164,22 @@ class MiniMindWebNavGenerator:
         }
 
 
+class OracleFirstOpenGenerator:
+    """Force the task-provided start page once, then delegate to the model."""
+
+    def __init__(self, delegate: Any, start_page: str) -> None:
+        self.delegate = delegate
+        self.start_page = start_page
+        self.used = False
+
+    def __call__(self, messages: list[dict[str, str]]) -> str:
+        if not self.used:
+            self.used = True
+            payload = {"name": "open_page", "arguments": {"page_id": self.start_page}}
+            return f"<tool_call>{json.dumps(payload, ensure_ascii=False)}</tool_call>"
+        return self.delegate(messages)
+
+
 def summarize(trajectories: list[dict[str, Any]]) -> dict[str, Any]:
     total = len(trajectories)
     success = sum(1 for row in trajectories if row["summary"].get("success"))
@@ -208,6 +224,11 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument("--top-p", type=float, default=None)
+    parser.add_argument(
+        "--oracle-first-open",
+        action="store_true",
+        help="Ablation: force open_page(task.start_page) once, then use the model.",
+    )
     parser.add_argument("--output", required=True)
     parser.add_argument("--report", required=True)
     args = parser.parse_args()
@@ -235,7 +256,12 @@ def main() -> None:
     trajectories = []
     for index, task in enumerate(tasks, start=1):
         env = BrowserEnv(page_store=page_store) if page_store is not None else None
-        result = run_model_task(task, generator, max_steps=args.max_steps, env=env)
+        task_generator = (
+            OracleFirstOpenGenerator(generator, task["start_page"])
+            if args.oracle_first_open
+            else generator
+        )
+        result = run_model_task(task, task_generator, max_steps=args.max_steps, env=env)
         result["template"] = task.get("template")
         result["difficulty"] = task.get("difficulty")
         result["page_type"] = task.get("page_type")
@@ -259,6 +285,7 @@ def main() -> None:
         "metadata": args.metadata,
         "limit": args.limit,
         "max_steps": args.max_steps,
+        "oracle_first_open": args.oracle_first_open,
         "prompt_stats": generator.prompt_stats(),
         "summary": summarize(trajectories),
     }

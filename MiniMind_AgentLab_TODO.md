@@ -453,8 +453,10 @@ Tool-use tokenizer adaptation and the first complete SFT milestone are finished.
 - [x] Add optional WebNav page metadata support to the MiniMind rollout adapter
 - [x] Audit all 1,868 V2 eval prompts against the 2,048-token context window
 - [x] Add message-aware context compaction for 831 over-length V2 decision points
-- [ ] Run Epoch3 zero-shot rollout on the current 500-task WebNav V2 snapshot
-- [ ] Analyze V2 results separately from the frozen V1 benchmark
+- [x] Run Epoch3 zero-shot rollout on the current 500-task WebNav V2 snapshot: `0/500`
+- [x] Confirm protocol transfer but zero valid V2 start-page actions: `open_page` tool `500/500`, valid V2 page ID `0/500`
+- [x] Analyze V2 results separately from the frozen V1 benchmark
+- [ ] Run an oracle-first-open V2 ablation before any V2 training
 
 ### SFT Milestone Evaluation Priority
 

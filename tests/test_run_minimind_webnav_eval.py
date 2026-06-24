@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import unittest
 
-from scripts.run_minimind_webnav_eval import clean_completion, compact_messages, render_prompt, summarize
+from scripts.run_minimind_webnav_eval import (
+    OracleFirstOpenGenerator,
+    clean_completion,
+    compact_messages,
+    render_prompt,
+    summarize,
+)
 
 
 class MiniMindWebNavEvalTests(unittest.TestCase):
@@ -79,6 +85,25 @@ class MiniMindWebNavEvalTests(unittest.TestCase):
         self.assertEqual(report["invalid_tool_calls"], 2)
         self.assertEqual(report["format_errors"], 1)
         self.assertEqual(report["by_template"]["v2_shopping_name"], {"total": 2, "success": 1})
+
+    def test_oracle_first_open_delegates_after_one_action(self) -> None:
+        delegated_messages = []
+
+        def delegate(messages: list[dict[str, str]]) -> str:
+            delegated_messages.append(messages)
+            return "model output"
+
+        generator = OracleFirstOpenGenerator(delegate, "v2_eval_c_shop_home")
+
+        first = generator([])
+        second = generator([{"role": "tool", "content": "page"}])
+
+        self.assertEqual(
+            first,
+            '<tool_call>{"name": "open_page", "arguments": {"page_id": "v2_eval_c_shop_home"}}</tool_call>',
+        )
+        self.assertEqual(second, "model output")
+        self.assertEqual(len(delegated_messages), 1)
 
 
 if __name__ == "__main__":
