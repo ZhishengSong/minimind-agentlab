@@ -50,6 +50,57 @@ def render_prompt(messages: list[dict[str, str]]) -> str:
     return "".join(render_message(message) for message in messages) + "<|im_start|>assistant\n"
 
 
+def compact_messages(
+    messages: list[dict[str, str]],
+    include_latest_action: bool = True,
+) -> list[dict[str, str]]:
+    """Keep the task instruction and the most recent action/observation pair."""
+    first_assistant = next(
+        (index for index, message in enumerate(messages) if message["role"] == "assistant"),
+        None,
+    )
+    if first_assistant is None:
+        return list(messages)
+
+    prefix = list(messages[:first_assistant])
+    last_tool = next(
+        (index for index in range(len(messages) - 1, first_assistant - 1, -1) if messages[index]["role"] == "tool"),
+        None,
+    )
+    if last_tool is None:
+        return prefix + list(messages[first_assistant:])
+
+    tail_start = last_tool
+    if include_latest_action and messages[last_tool - 1]["role"] == "assistant":
+        tail_start = last_tool - 1
+    return prefix + list(messages[tail_start:])
+
+
+def prepare_prompt(
+    messages: list[dict[str, str]],
+    tokenizer: Any,
+    max_prompt_tokens: int,
+) -> tuple[str, list[int], bool]:
+    prompt = render_prompt(messages)
+    prompt_ids = tokenizer.encode(prompt, add_special_tokens=False)
+    if len(prompt_ids) <= max_prompt_tokens:
+        return prompt, prompt_ids, False
+
+    compacted_prompt = render_prompt(compact_messages(messages))
+    compacted_ids = tokenizer.encode(compacted_prompt, add_special_tokens=False)
+    if len(compacted_ids) <= max_prompt_tokens:
+        return compacted_prompt, compacted_ids, True
+
+    observation_prompt = render_prompt(compact_messages(messages, include_latest_action=False))
+    observation_ids = tokenizer.encode(observation_prompt, add_special_tokens=False)
+    if len(observation_ids) <= max_prompt_tokens:
+        return observation_prompt, observation_ids, True
+
+    raise ValueError(
+        f"Prompt remains too long after message compaction: {len(observation_ids)} > {max_prompt_tokens} tokens."
+    )
+
+
 def clean_completion(text: str) -> str:
     text = text.strip()
     if "<|im_end|>" in text:
@@ -81,10 +132,16 @@ class MiniMindWebNavGenerator:
         self.temperature = temperature
         self.top_k = top_k
         self.top_p = top_p
+        self.max_prompt_tokens = self.model.config.max_position_embeddings
+        self.prompt_count = 0
+        self.compacted_prompt_count = 0
+        self.max_prompt_length = 0
 
     def __call__(self, messages: list[dict[str, str]]) -> str:
-        prompt = render_prompt(messages)
-        prompt_ids = self.tokenizer.encode(prompt, add_special_tokens=False)
+        _, prompt_ids, compacted = prepare_prompt(messages, self.tokenizer, self.max_prompt_tokens)
+        self.prompt_count += 1
+        self.compacted_prompt_count += int(compacted)
+        self.max_prompt_length = max(self.max_prompt_length, len(prompt_ids))
         input_ids = torch.tensor([prompt_ids], dtype=torch.long, device=self.device)
         generated_ids = generate(
             model=self.model,
@@ -95,8 +152,16 @@ class MiniMindWebNavGenerator:
             top_p=self.top_p,
             eos_token_id=self.tokenizer.eos_token_id,
         )
-        text = self.tokenizer.decode(generated_ids[0].tolist())
-        return clean_completion(text[len(prompt) :])
+        completion_ids = generated_ids[0, input_ids.shape[1] :].tolist()
+        return clean_completion(self.tokenizer.decode(completion_ids))
+
+    def prompt_stats(self) -> dict[str, int]:
+        return {
+            "prompt_count": self.prompt_count,
+            "compacted_prompt_count": self.compacted_prompt_count,
+            "max_prompt_tokens": self.max_prompt_length,
+            "prompt_token_budget": self.max_prompt_tokens,
+        }
 
 
 def summarize(trajectories: list[dict[str, Any]]) -> dict[str, Any]:
@@ -134,6 +199,7 @@ def main() -> None:
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--webnav-root", default="D:/job/Program/WebNav-RL")
     parser.add_argument("--tasks", default="D:/job/Program/WebNav-RL/tasks/eval_tasks.jsonl")
+    parser.add_argument("--metadata", default=None, help="Optional WebNav page metadata for V2/custom tasks.")
     parser.add_argument("--tokenizer-path", default="outputs/tooluse_init/tokenizer")
     parser.add_argument("--limit", type=int, default=20)
     parser.add_argument("--max-steps", type=int, default=None)
@@ -150,9 +216,12 @@ def main() -> None:
     if str(webnav_root) not in sys.path:
         sys.path.insert(0, str(webnav_root))
 
+    from env.browser_env import BrowserEnv
+    from env.page_state import PageStore
     from rollout.model_runner import run_model_task
 
     tasks = load_jsonl(Path(args.tasks), limit=args.limit)
+    page_store = PageStore(args.metadata) if args.metadata is not None else None
     generator = MiniMindWebNavGenerator(
         checkpoint_path=args.checkpoint,
         tokenizer_path=args.tokenizer_path,
@@ -165,7 +234,8 @@ def main() -> None:
 
     trajectories = []
     for index, task in enumerate(tasks, start=1):
-        result = run_model_task(task, generator, max_steps=args.max_steps)
+        env = BrowserEnv(page_store=page_store) if page_store is not None else None
+        result = run_model_task(task, generator, max_steps=args.max_steps, env=env)
         result["template"] = task.get("template")
         result["difficulty"] = task.get("difficulty")
         result["page_type"] = task.get("page_type")
@@ -186,8 +256,10 @@ def main() -> None:
     report = {
         "checkpoint": args.checkpoint,
         "tasks": args.tasks,
+        "metadata": args.metadata,
         "limit": args.limit,
         "max_steps": args.max_steps,
+        "prompt_stats": generator.prompt_stats(),
         "summary": summarize(trajectories),
     }
     report_path = Path(args.report)

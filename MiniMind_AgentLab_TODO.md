@@ -450,6 +450,11 @@ Tool-use tokenizer adaptation and the first complete SFT milestone are finished.
 - [x] Run Epoch3 closed-loop WebNav-RL eval200: `191/200 = 95.5%`
 - [x] Verify eval200 has 100% submission, 0 invalid tool calls, and 0 format errors
 - [x] Analyze all 9 rollout failures in `reports/minimind_sft_epoch3_rollout_failure_analysis.md`
+- [x] Add optional WebNav page metadata support to the MiniMind rollout adapter
+- [x] Audit all 1,868 V2 eval prompts against the 2,048-token context window
+- [x] Add message-aware context compaction for 831 over-length V2 decision points
+- [ ] Run Epoch3 zero-shot rollout on the current 500-task WebNav V2 snapshot
+- [ ] Analyze V2 results separately from the frozen V1 benchmark
 
 ### SFT Milestone Evaluation Priority
 
