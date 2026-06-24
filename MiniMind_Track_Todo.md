@@ -142,7 +142,7 @@ loss 曲线可展示
 
 ## V0 Todo
 
-当前进度（2026-06-23）：64M 模型已在租用服务器训练到 50k step；5k/10k/20k/50k 完整 checkpoint、日志、配置、tokenizer、评估报告和生成样例均已下载并通过归档 SHA256 校验。所有保留 checkpoint 已在同一固定 1k-example validation slice 上完成统一评估，50k checkpoint 最优，loss 为 `2.251902`，perplexity 为 `9.505802`。固定 10-prompt generation suite 已完成，结果显示模型能生成基本中文段落但重复明显，适合作为 tool-use SFT 的 base，不适合作为成品助手。Version 1 special tokens 与 embedding resize 已完成：vocab 从 6400 扩到 6404，tool-use init checkpoint 已保存到 `outputs/tooluse_init/pretrain_step_050000_tooluse_init.pt`。Version 2 数据转换已完成：800 条 train trajectories 转成 2530 条 next-action SFT 样本，200 条 eval trajectories 转成 637 条 eval 样本。200-step MiniMind SFT 后，next-action eval 上 wrapper/json/tool-name accuracy 均为 100%，target exact match 为 68.6%。WebNav-RL rollout eval 已接通：SFT-200step 在 eval20 上 0 format error、100% submitted rate，但 task success 为 0%。约 1 epoch SFT 后，eval20 success 提升到 2/20，仍保持 0 format error 和 100% submitted rate；主要失败模式仍是 click/answer 参数塌缩。下一步更适合做 failure-driven data balancing 或 verifier reranking，专门改善 observation-grounded argument selection。
+当前进度（2026-06-24）：Pretrain V0、tool-use tokenizer adaptation 和 MiniMind tool-use SFT V1 均已完成。服务器独立完成 Epoch1/2/3 SFT；同一 eval100 上 target exact match 依次为 `72% / 96% / 100%`。Epoch3 在完整 637-example next-action eval 上达到 wrapper/JSON/tool-name `100%`，argument/target exact match `628/637 = 98.59%`，因此选为最终 SFT checkpoint。服务器 checkpoint 已下载到本地并通过 SHA256 `77f29f3f5fd812e2fa05ba3afb6af85b0d319dad2de6e7fbff52e72d35e87ce6` 校验；本地 CPU 加载/生成 smoke 和最终 SFT V1 报告也已完成。固定 pretrain val 回归检查显示 loss 从 `2.252283` 升至 `2.569051`、perplexity 从 `9.509420` 升至 `13.053436`，说明专业化带来可测但非崩坏式的通用能力退化。Epoch2 全量 eval、WebNav-RL rollout、best-of-N 和 GRPO 均为可选后续研究。
 
 ### 0.1 整理 pretrain checkpoint
 
@@ -409,11 +409,14 @@ Todo：
 - [x] 加载新 tokenizer
 - [x] 设置 max_seq_len
 - [x] 设置 batch size 和 gradient accumulation
-- [ ] 跑 1–3 epoch
+- [x] 跑 1–3 epoch
 - [x] 保存 SFT smoke checkpoint
 - [x] 记录 smoke loss 曲线
 - [x] 跑 200-step local SFT
 - [x] 评估 next-action format accuracy
+- [x] 在服务器完成 Epoch1/2/3 独立 SFT
+- [x] 选择 Epoch3 作为最终 SFT checkpoint
+- [x] 完成 Epoch3 全量 637-example next-action eval
 
 建议配置：
 
@@ -451,6 +454,24 @@ format_errors: 0
 主要问题: click/answer 参数塌缩
 ```
 
+服务器 SFT checkpoint 对比：
+
+```text
+Epoch1 eval100 target exact match: 72%
+Epoch2 eval100 target exact match: 96%
+Epoch3 eval100 target exact match: 100%
+Epoch3 eval637 target exact match: 98.59% (628/637)
+```
+
+当前阶段必要性分级：
+
+```text
+已完成且必要：Epoch3 全量 eval637、checkpoint 下载、SHA256 校验
+已完成收尾：本地 checkpoint load/generation smoke、最终 SFT 报告
+已完成建议项：SFT 前后固定 pretrain val loss 对比
+可选：Epoch2 全量 eval637、跨项目 rollout、best-of-N、GRPO
+```
+
 ---
 
 ### 2.4 SFT 后基础评估
@@ -474,7 +495,7 @@ Simple Task Success Rate
 
 Todo：
 
-- [ ] 写 MiniMind rollout runner
+- [x] 写可选的 MiniMind rollout adapter
 - [ ] 跑 pretrain-only eval
 - [x] 跑 SFT next-action format eval
 - [x] 输出 next-action eval report
@@ -817,14 +838,15 @@ Todo：
 如果想马上开工，就按这个清单做：
 
 ```text
-[ ] 整理 MiniMind pretrain checkpoint
-[ ] 记录 pretrain 配置、loss、硬件、训练数据
-[ ] 测试 pretrain-only 生成能力
-[ ] 设计 tool-use special tokens
-[ ] 更新 tokenizer 并 resize embedding
-[ ] 从 WebGym-RL expert trajectories 构造 MiniMind SFT 数据
-[ ] 跑 MiniMind tool-use SFT
-[ ] 评估 MiniMind Pretrain-only vs MiniMind-SFT
+[x] 整理 MiniMind pretrain checkpoint
+[x] 记录 pretrain 配置、loss、硬件、训练数据
+[x] 测试 pretrain-only 生成能力
+[x] 设计 tool-use special tokens
+[x] 更新 tokenizer 并 resize embedding
+[x] 从 WebGym-RL expert trajectories 构造 MiniMind SFT 数据
+[x] 跑 MiniMind tool-use SFT
+[x] 完成 MiniMind-SFT next-action full eval
+[x] 完成 Pretrain/tool-use-init vs MiniMind-SFT pretrain-loss 回归对比
 [ ] 接入 WebGym-RL verifier reward
 [ ] 筛选 Level 1 / Level 2 RL tasks
 [ ] 跑 MiniMind 小规模 GRPO

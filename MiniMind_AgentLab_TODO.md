@@ -384,7 +384,7 @@ python scripts/eval_pretrain_loss.py \
 
 ## Phase 2: Agentic RL Research Layer
 
-Started with tokenizer/checkpoint adaptation. Tool-use SFT and RL training have not started yet.
+Tool-use tokenizer adaptation and the first complete SFT milestone are finished. Epoch1/2/3 server training completed on 2026-06-24; Epoch3 is the selected checkpoint. RL training has not started.
 
 ### Step 14A: Tool-Use Tokenizer Init
 
@@ -435,6 +435,40 @@ Started with tokenizer/checkpoint adaptation. Tool-use SFT and RL training have 
 - [x] Confirm SFT-epoch1 improves rollout success to 2/20 while keeping 0 format errors
 - [x] Confirm argument collapse remains the main bottleneck after longer SFT
 - [x] Write `docs/step_12_minimind_rollout_eval.md`
+- [x] Prepare server artifact manifest and SFT sweep runner
+- [x] Run independent Epoch1/2/3 SFT experiments on the GPU server
+- [x] Evaluate Epoch1 on the same 100-example next-action slice: `72%` exact match
+- [x] Evaluate Epoch2 on the same 100-example next-action slice: `96%` exact match
+- [x] Evaluate Epoch3 on the same 100-example next-action slice: `100%` exact match
+- [x] Evaluate Epoch3 on the full 637-example next-action eval set
+- [x] Record Epoch3 full-eval wrapper/JSON/tool-name accuracy: `100%`
+- [x] Record Epoch3 full-eval argument/target exact match: `628/637 = 98.59%`
+- [x] Select `checkpoints/sft_minimind_webnav_epoch3/latest.pt` as the final SFT checkpoint
+- [x] Save Epoch3 checkpoint SHA256: `77f29f3f5fd812e2fa05ba3afb6af85b0d319dad2de6e7fbff52e72d35e87ce6`
+- [x] Download and SHA256-verify Epoch3 checkpoint locally at `checkpoints/sft_minimind_webnav_epoch3_server/latest.pt`
+
+### SFT Milestone Evaluation Priority
+
+Required for closing the current SFT milestone:
+
+- [x] Run a held-out full next-action evaluation on the selected checkpoint
+- [x] Verify tool-call wrapper, JSON, tool-name, arguments, and exact-target metrics
+- [x] Download the selected checkpoint and verify SHA256 locally
+- [x] Load the downloaded Epoch3 checkpoint locally and run one forward/generation smoke test
+- [x] Write the final SFT V1 report with training configuration, learning curve, eval table, failures, and selected checkpoint
+
+Strongly recommended before claiming that SFT preserves base-model quality:
+
+- [x] Evaluate tool-use init on the fixed 1k pretrain validation slice: loss `2.252283`, perplexity `9.509420`
+- [x] Evaluate SFT Epoch3 on the same fixed 1k pretrain validation slice: loss `2.569051`, perplexity `13.053436`
+- [x] Report the pretrain-loss delta: `+0.316768` loss and `+3.544016` perplexity; measurable specialization tradeoff, not model collapse
+
+Optional comparisons, not blockers for the current SFT milestone:
+
+- [ ] Run Epoch2 full 637-example evaluation for a complete learning-curve table
+- [ ] Run additional rollout/environment evaluation in the separate WebNav-RL project
+- [ ] Add best-of-N/verifier reranking experiments
+- [ ] Start GRPO-style Agentic RL experiments
 
 ### Step 14: Tool-Use Environment
 
@@ -473,11 +507,12 @@ Started with tokenizer/checkpoint adaptation. Tool-use SFT and RL training have 
 
 ### Step 17: SFT Warmup For Tool Use
 
-- [ ] Build tiny tool-use SFT dataset
-- [ ] Add SFT dataset loader
-- [ ] Add assistant-only loss masking
-- [ ] Add `scripts/train_sft.py`
-- [ ] Compare pretrain-only vs SFT outputs
+- [x] Build tool-use SFT dataset
+- [x] Add next-action SFT dataset loader
+- [x] Add assistant-only loss masking
+- [x] Add `scripts/train_sft_minimind.py`
+- [x] Train and evaluate the selected Epoch3 SFT checkpoint
+- [x] Compare base/tool-use-init vs SFT on the fixed pretrain validation slice
 
 ### Step 18: Inference-Time Optimization
 

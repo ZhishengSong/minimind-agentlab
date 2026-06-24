@@ -41,8 +41,10 @@ Current status and limitations:
 - The current non-GPU workstation is used for source and artifact management; checkpoint evaluation and post-training will run on a separate GPU machine.
 - A fixed 10-prompt generation suite has been run for the 50k checkpoint; outputs are coherent enough for inspection but repetitive.
 - Tool-use tokenizer adaptation has produced a resized vocab-6404 init checkpoint from the 50k pretrain base.
-- A 200-step MiniMind tool-use SFT run reaches 100% wrapper/JSON/tool-name accuracy and 68.6% exact target match on 637 next-action eval examples.
-- Rollout eval has started: SFT-200step reaches 0 format errors and 100% submitted rate on eval20, while about one epoch of SFT improves task success to 2/20 but still shows argument selection collapse.
+- Server SFT Epoch1/2/3 reached `72% / 96% / 100%` exact match on the same 100-example next-action slice.
+- Epoch3 is the selected SFT checkpoint and reaches 100% wrapper/JSON/tool-name accuracy plus `628/637 = 98.59%` argument/target exact match on the full next-action eval set.
+- The selected Epoch3 checkpoint was downloaded locally and SHA256-verified.
+- Fixed-slice pretrain regression shows loss `2.252283 -> 2.569051` and perplexity `9.509420 -> 13.053436`, a measurable specialization tradeoff.
 - Agentic RL training has not started yet.
 
 ## Architecture
@@ -347,10 +349,8 @@ The intent is to learn and demonstrate the engineering internals behind small LL
 
 Near term:
 
-- Run the server SFT/rollout sweep described in `docs/server_experiment_plan.md`
-- Add failure-driven data balancing for click/answer argument selection
-- Implement verifier-guided best-of-N reranking for valid MiniMind tool calls
-- Rerun rollout eval20/eval50 after data balancing or reranking
+- Review `reports/minimind_sft_v1_final.md` as the closed SFT V1 milestone
+- Treat rollout, best-of-N, and GRPO as optional next research milestones
 
 Next research layer:
 
