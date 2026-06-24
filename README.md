@@ -45,6 +45,7 @@ Current status and limitations:
 - Epoch3 is the selected SFT checkpoint and reaches 100% wrapper/JSON/tool-name accuracy plus `628/637 = 98.59%` argument/target exact match on the full next-action eval set.
 - In the fixed WebNav-RL V1 closed-loop benchmark, Epoch3 completes `191/200 = 95.5%` tasks with 100% submission, zero invalid tool calls, and zero format errors.
 - A preliminary zero-shot run on the current 500-task WebNav V2 structural-generalization snapshot scored `0/500`: tool syntax transferred, but the model reused memorized V1 page IDs and never reached a V2 observation.
+- An oracle-first-open ablation also scored `0/500`: V2 prompts were 1782-2048 tokens versus the 1024-token SFT limit, and no model-generated action copied a visible random `el_*` identifier.
 - The selected Epoch3 checkpoint was downloaded locally and SHA256-verified.
 - Fixed-slice pretrain regression shows loss `2.252283 -> 2.569051` and perplexity `9.509420 -> 13.053436`, a measurable specialization tradeoff.
 - Agentic RL training has not started yet.

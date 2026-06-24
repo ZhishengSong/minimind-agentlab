@@ -456,7 +456,11 @@ Tool-use tokenizer adaptation and the first complete SFT milestone are finished.
 - [x] Run Epoch3 zero-shot rollout on the current 500-task WebNav V2 snapshot: `0/500`
 - [x] Confirm protocol transfer but zero valid V2 start-page actions: `open_page` tool `500/500`, valid V2 page ID `0/500`
 - [x] Analyze V2 results separately from the frozen V1 benchmark
-- [ ] Run an oracle-first-open V2 ablation before any V2 training
+- [x] Run an oracle-first-open V2 ablation: `0/500`, with `445/500` first model decisions failing to parse
+- [x] Confirm zero successful model-generated V2 actions and zero copied random `el_*` identifiers
+- [x] Identify context-length OOD (1782-2048 tokens vs 1024-token SFT) as a second V2 bottleneck
+- [ ] After WebNav V2 freezes, prepare 2048-context V2 or mixed V1+V2 SFT
+- [ ] Preserve V1 eval200 as a regression benchmark during V2 adaptation
 
 ### SFT Milestone Evaluation Priority
 

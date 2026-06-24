@@ -142,7 +142,7 @@ loss 曲线可展示
 
 ## V0 Todo
 
-当前进度（2026-06-24）：Pretrain V0、tool-use tokenizer adaptation 和 MiniMind tool-use SFT V1 均已完成。服务器独立完成 Epoch1/2/3 SFT；Epoch3 在完整 637-example next-action eval 上达到 `628/637 = 98.59%` exact match。固定 WebNav-RL V1 的 200-task 闭环 rollout 达到 `191/200 = 95.5%` success、100% submitted、0 invalid tool calls 和 0 format errors。当前 WebNav V2 snapshot 的 500-task zero-shot 结果为 `0/500`：模型第一步 `500/500` 使用合法 `open_page` 工具，但 `0/500` 复制任务中明示的 V2 page ID，而是复用旧的 `shop_home/course_home`。这证明协议格式迁移成功，但 V1 固定 identifier 存在明显记忆，尚未形成结构泛化。下一步先做 oracle-first-open 消融，再决定是否在 V2 冻结后进行 mixed SFT；目前不应直接做 GRPO。
+当前进度（2026-06-24）：Pretrain V0、tool-use tokenizer adaptation 和 MiniMind tool-use SFT V1 均已完成。Epoch3 在完整 637-example next-action eval 上达到 `628/637 = 98.59%` exact match，固定 WebNav-RL V1 的 200-task 闭环 rollout 达到 `191/200 = 95.5%` success。当前 WebNav V2 snapshot 的 500-task zero-shot 与 oracle-first-open 消融均为 `0/500`。Zero-shot 中模型 `500/500` 使用合法 `open_page` 工具，但 `0/500` 复制 V2 page ID；oracle 打开正确首页后，`445/500` 首个模型输出格式失败，其余 55 条仍全部使用旧 V1 ID，随机 `el_*` 复制为 0。V2 首步 prompt 为 1782-2048 tokens，而 Epoch3 SFT 上限为 1024，说明当前边界同时来自长上下文 OOD 和固定 identifier 记忆。下一步等待 V2 冻结，再做 2048-context 的 V2 或 mixed V1+V2 SFT；目前不应直接做 GRPO。
 
 ### 0.1 整理 pretrain checkpoint
 

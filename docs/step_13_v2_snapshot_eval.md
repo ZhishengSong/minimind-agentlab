@@ -111,3 +111,22 @@ python -u scripts/run_minimind_webnav_eval.py \
 ```
 
 This is an ablation, not an autonomous task-success result. Its purpose is to measure behavior after the first V2 observation becomes available.
+
+## Oracle-Open Result
+
+The 500-task ablation produced:
+
+```text
+success: 0/500
+submitted: 61/500
+format_errors: 1890
+invalid_tool_calls: 3279
+successful model-generated actions: 0
+random V2 el_* identifiers used: 0
+```
+
+At the first model-controlled step, 445/500 outputs had parser errors. The other 55 were valid `click` calls but all used old V1-style identifiers and failed.
+
+Every first post-open V2 prompt was 1782-2048 tokens, while Epoch3 SFT used a maximum sequence length of 1024. Parseable first decisions had a median length of 1804 tokens; format failures had a median of 2000. This shows both context-length OOD and identifier-grounding failure.
+
+Full evidence is in `reports/minimind_sft_epoch3_v2_oracle_open_analysis.md`. No further zero-shot ablation or GRPO run is justified. The next model change should be 2048-context V2 or mixed V1+V2 SFT after the V2 environment is frozen.
