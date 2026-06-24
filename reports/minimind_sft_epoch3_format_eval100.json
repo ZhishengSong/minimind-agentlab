@@ -1,0 +1,155 @@
+{
+  "checkpoint": "checkpoints/sft_minimind_webnav_epoch3/latest.pt",
+  "data": "outputs/minimind_sft/sft_eval_next_action.jsonl",
+  "limit": 100,
+  "counts": {
+    "total": 100,
+    "wrapper_ok": 100,
+    "json_ok": 100,
+    "valid_tool_name": 100,
+    "tool_name_match": 100,
+    "arguments_exact_match": 100,
+    "target_exact_match": 100
+  },
+  "metrics": {
+    "wrapper_ok": 1.0,
+    "json_ok": 1.0,
+    "valid_tool_name": 1.0,
+    "tool_name_match": 1.0,
+    "arguments_exact_match": 1.0,
+    "target_exact_match": 1.0
+  },
+  "error_counts": {},
+  "sample_records": [
+    {
+      "id": "shop_00801::turn01",
+      "target_tool": "open_page",
+      "completion": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"shop_home\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"shop_home\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "open_page",
+        "arguments": {
+          "page_id": "shop_home"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "shop_00801::turn02",
+      "target_tool": "click",
+      "completion": "<tool_call>{\"name\": \"click\", \"arguments\": {\"element_id\": \"shop_item_007\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"click\", \"arguments\": {\"element_id\": \"shop_item_007\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "click",
+        "arguments": {
+          "element_id": "shop_item_007"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "shop_00801::turn03",
+      "target_tool": "submit_answer",
+      "completion": "<tool_call>{\"name\": \"submit_answer\", \"arguments\": {\"answer\": \"PulseBand Neo\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"submit_answer\", \"arguments\": {\"answer\": \"PulseBand Neo\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "submit_answer",
+        "arguments": {
+          "answer": "PulseBand Neo"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "shop_00802::turn01",
+      "target_tool": "open_page",
+      "completion": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"shop_home\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"shop_home\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "open_page",
+        "arguments": {
+          "page_id": "shop_home"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "shop_00802::turn02",
+      "target_tool": "click",
+      "completion": "<tool_call>{\"name\": \"click\", \"arguments\": {\"element_id\": \"shop_item_005\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"click\", \"arguments\": {\"element_id\": \"shop_item_005\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "click",
+        "arguments": {
+          "element_id": "shop_item_005"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "shop_00802::turn03",
+      "target_tool": "submit_answer",
+      "completion": "<tool_call>{\"name\": \"submit_answer\", \"arguments\": {\"answer\": \"NoteTab Air\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"submit_answer\", \"arguments\": {\"answer\": \"NoteTab Air\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "submit_answer",
+        "arguments": {
+          "answer": "NoteTab Air"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "course_00803::turn01",
+      "target_tool": "open_page",
+      "completion": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"course_home\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"course_home\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "open_page",
+        "arguments": {
+          "page_id": "course_home"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "course_00803::turn02",
+      "target_tool": "click",
+      "completion": "<tool_call>{\"name\": \"click\", \"arguments\": {\"element_id\": \"course_item_009\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"click\", \"arguments\": {\"element_id\": \"course_item_009\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "click",
+        "arguments": {
+          "element_id": "course_item_009"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "course_00803::turn03",
+      "target_tool": "submit_answer",
+      "completion": "<tool_call>{\"name\": \"submit_answer\", \"arguments\": {\"answer\": \"ECON240\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"submit_answer\", \"arguments\": {\"answer\": \"ECON240\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "submit_answer",
+        "arguments": {
+          "answer": "ECON240"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "course_00804::turn01",
+      "target_tool": "open_page",
+      "completion": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"course_home\"}}</tool_call><|im_end|>",
+      "target_text": "<tool_call>{\"name\": \"open_page\", \"arguments\": {\"page_id\": \"course_home\"}}</tool_call><|im_end|>\n",
+      "parsed": {
+        "name": "open_page",
+        "arguments": {
+          "page_id": "course_home"
+        }
+      },
+      "error": null
+    }
+  ]
+}
